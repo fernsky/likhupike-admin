@@ -33,7 +33,7 @@ services:
     container_name: redis-survey
     restart: always
     ports:
-      - "7000:6379"
+      - "7001:6379"
     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     volumes:
       - ./var/data/cache:/data

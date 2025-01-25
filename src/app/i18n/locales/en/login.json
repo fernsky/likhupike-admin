@@ -1,0 +1,7 @@
+{
+  "dashboard": "Dashboard",
+  "signIn": "Login",
+  "username": "Username",
+  "password": "Password",
+  "signInError": "Invalid username or password"
+}
