@@ -1,6 +1,6 @@
 import { dir } from "i18next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import Navbar from "./_components/navbar";
 import { languages } from "../i18n/settings";
 import { AppStoreProvider } from "./_components/app-store-provider";

@@ -1,7 +1,7 @@
-import BreadCrumb from "@/components/Profile/BreadCrumb";
-import Content from "@/components/Profile/Content";
-import Title from "@/components/Profile/Title";
-import { sampleContent } from "@/data/sampleContent";
+import BreadCrumb from "./_components/breadcrumb";
+import Content from "./_components/content";
+import Title from "./_components/title";
+import { sampleContent } from "./_data/sample-content";
 import React from "react";
 
 interface ProfileProps {

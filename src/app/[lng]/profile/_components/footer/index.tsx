@@ -5,7 +5,7 @@ import InstagramIcon from "./logos/instagram";
 import TwitterIcon from "./logos/twitter";
 import YoutubeIcon from "./logos/youtube";
 import { Copyright } from "lucide-react";
-import { useTranslation } from "@/app/i18n";
+import { useTranslation } from "@/app/[lng]/i18n";
 
 interface FooterProps {
   lng: string;

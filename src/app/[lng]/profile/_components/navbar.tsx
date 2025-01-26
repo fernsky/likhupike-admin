@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import ChangeLanguage from "./change-language";
-import { useTranslation } from "@/app/i18n/client";
+import { useTranslation } from "@/app/[lng]/i18n/client";
 import Search from "./search";
 import Link from "next/link";
 

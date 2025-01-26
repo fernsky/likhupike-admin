@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
-import SidebarWrapper from "@/components/Map/Sidebar/SidebarWrapper";
-import useStore from "@/store";
+import SidebarWrapper from "./_components/sidebar-wrapper";
+import useStore from "../_store/app-store";
 import dynamic from "next/dynamic";
-const Leaflet = dynamic(() => import("@/components/Map/Leaflet"), {
+const Leaflet = dynamic(() => import("./_components/leaflet"), {
   ssr: false, // This ensures the component is not SSR'd
 });
 
@@ -17,15 +17,15 @@ const MapPage: React.FC<MapProps> = ({ params }) => {
   const { lng } = params;
 
   const addMunicipalityBoundaries = useStore(
-    (state) => state.addMunicipalityBoundaries
+    (state) => state.addMunicipalityBoundaries,
   );
   const addHealths = useStore((state) => state.addHealths);
 
   const addMunicipalityOffices = useStore(
-    (state) => state.addMunicipalityOffices
+    (state) => state.addMunicipalityOffices,
   );
   const addPhysicalInfrastructures = useStore(
-    (state) => state.addPhysicalInfrastructures
+    (state) => state.addPhysicalInfrastructures,
   );
   const addTouristPlaces = useStore((state) => state.addTouristPlaces);
   const addWardBoundaries = useStore((state) => state.addWardBoundaries);

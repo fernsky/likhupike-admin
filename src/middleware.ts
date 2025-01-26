@@ -1,7 +1,7 @@
 import { verifyRequestOrigin } from "lucia";
 import { NextResponse } from "next/server";
 import acceptLanguage from "accept-language";
-import { fallbackLng, languages, cookieName } from "./app/i18n/settings";
+import { fallbackLng, languages, cookieName } from "./app/[lng]/i18n/settings";
 import type { NextRequest } from "next/server";
 
 acceptLanguage.languages(languages);
