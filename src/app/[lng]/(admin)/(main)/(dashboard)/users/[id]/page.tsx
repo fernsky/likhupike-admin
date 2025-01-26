@@ -96,11 +96,9 @@ export default function EnumeratorDetailsPage({
       subtitle={`ID: ${params.id}`}
       actions={
         <div className="flex gap-2">
-          <Button onClick={() => router.push("/enumerators")}>
-            Back to List
-          </Button>
-          <Button onClick={() => router.push(`/enumerators/${params.id}/edit`)}>
-            Edit Enumerator
+          <Button onClick={() => router.push("/users")}>Back to List</Button>
+          <Button onClick={() => router.push(`/users/${params.id}/edit`)}>
+            Edit User
           </Button>
         </div>
       }

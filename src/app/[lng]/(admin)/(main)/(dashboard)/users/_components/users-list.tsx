@@ -14,8 +14,46 @@ import { useMediaQuery } from "react-responsive";
 import { UserDropdown } from "./user-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Phone, Mail, MapPin, User2 } from "lucide-react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  User2,
+  Globe,
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const RoleBadge = ({ role }: { role: string }) => {
+  const roleConfig = {
+    admin: {
+      icon: ShieldAlert,
+      className: "bg-destructive/10 text-destructive hover:bg-destructive/20",
+    },
+    editor: {
+      icon: ShieldCheck,
+      className: "bg-warning/10 text-warning hover:bg-warning/20",
+    },
+    viewer: {
+      icon: Shield,
+      className: "bg-info/10 text-info hover:bg-info/20",
+    },
+  }[role] ?? {
+    icon: Shield,
+    className: "bg-muted text-muted-foreground",
+  };
+
+  const Icon = roleConfig.icon;
+
+  return (
+    <Badge variant="outline" className={`gap-1 ${roleConfig.className}`}>
+      <Icon className="h-3 w-3" />
+      <span className="capitalize">{role}</span>
+    </Badge>
+  );
+};
 
 export function UsersList() {
   const [users] = api.useQueries((t) => [t.userManagement.getAll()]);
@@ -58,13 +96,16 @@ export function UsersList() {
           {users.data.map((user) => (
             <Card
               key={user.id}
-              className="overflow-hidden transition-all hover:shadow-md cursor-pointer"
+              className="overflow-hidden transition-all hover:shadow-md cursor-pointer bg-white"
               onClick={(e) => handleClick(user.id, e)}
             >
               <CardContent className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-semibold">{user.name}</h3>
+                    <div className="mt-2">
+                      <RoleBadge role={user.role ?? "viewer"} />
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       ID: {user.id.slice(0, 8)}
                     </p>
@@ -72,6 +113,16 @@ export function UsersList() {
                 </div>
 
                 <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Globe className="h-4 w-4" />
+                    <span className="capitalize">{user.scope}</span>
+                  </div>
+                  {user.scope === "ward" && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <MapPin className="h-4 w-4" />
+                      <span>Ward {user.wardNumber}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Phone className="h-4 w-4" />
                     <span>{user.phoneNumber}</span>
@@ -82,10 +133,6 @@ export function UsersList() {
                       <span>{user.email}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>Ward {user.wardNumber}</span>
-                  </div>
                 </div>
 
                 <div className="mt-4 flex justify-end">
@@ -98,14 +145,15 @@ export function UsersList() {
           ))}
         </div>
       ) : (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border bg-white">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[200px]">Name</TableHead>
+                <TableHead>Role</TableHead>
                 <TableHead>Contact</TableHead>
+                <TableHead>Scope</TableHead>
                 <TableHead>Ward</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -125,6 +173,9 @@ export function UsersList() {
                     </div>
                   </TableCell>
                   <TableCell>
+                    <RoleBadge role={user.role ?? "viewer"} />
+                  </TableCell>
+                  <TableCell>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
@@ -140,14 +191,24 @@ export function UsersList() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      Ward {user.wardNumber}
+                      <Globe className="h-4 w-4 text-muted-foreground" />
+                      <span className="capitalize">{user.scope}</span>
                     </div>
                   </TableCell>
+                  <TableCell>
+                    {user.scope === "ward" && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-muted-foreground" />
+                        Ward {user.wardNumber}
+                      </div>
+                    )}
+                  </TableCell>
 
-                  <div className="dropdown-trigger">
-                    <UserDropdown userId={user.id} />
-                  </div>
+                  <TableCell>
+                    <div className="dropdown-trigger">
+                      <UserDropdown userId={user.id} />
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

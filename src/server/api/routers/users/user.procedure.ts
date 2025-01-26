@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { Scrypt } from "lucia";
 import { generateId } from "lucia";
-import { eq, sql } from "drizzle-orm";
+import { eq, not, sql } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
   createUserSchema,
@@ -40,7 +40,7 @@ export const userManagementRouter = createTRPCRouter({
         id: userId,
         ...input,
         hashedPassword,
-        role: "enumerator",
+        role: "viewer",
       });
 
       return { success: true };
@@ -132,7 +132,7 @@ export const userManagementRouter = createTRPCRouter({
     }
 
     return ctx.db.query.users.findMany({
-      where: (users, { eq }) => eq(users.role, "enumerator"),
+      where: (users, { eq }) => not(eq(users.id, ctx.user.id)),
     });
   }),
 });

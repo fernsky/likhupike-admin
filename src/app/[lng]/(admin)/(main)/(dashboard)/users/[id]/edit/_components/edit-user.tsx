@@ -30,6 +30,15 @@ import {
   type UpdateUserInput,
 } from "@/server/api/routers/users/user.schema";
 import { z } from "zod";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Shield, ShieldCheck, ShieldAlert } from "lucide-react";
 
 const FormCard = ({
   title,
@@ -40,8 +49,8 @@ const FormCard = ({
   description: string;
   children: React.ReactNode;
 }) => (
-  <Card>
-    <CardHeader>
+  <Card className="bg-white">
+    <CardHeader className="border-b bg-white">
       <CardTitle className="text-lg font-medium">{title}</CardTitle>
       <CardDescription>{description}</CardDescription>
     </CardHeader>
@@ -85,6 +94,8 @@ export function EditUser({ userId }: { userId: string }) {
       });
     }
   }, [user, form, userId]);
+
+  const watchScope = form.watch("scope");
 
   async function onSubmit(values: UpdateUserInput) {
     setIsLoading(true);
@@ -194,6 +205,28 @@ export function EditUser({ userId }: { userId: string }) {
           </FormCard>
 
           <FormCard
+            title="Role Assignment"
+            description="Modify user's role and permissions"
+          >
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="space-y-4">
+                  <FormLabel className="flex items-center gap-2 text-base">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    User Role
+                  </FormLabel>
+                  <FormControl>
+                    {/* Same RadioGroup as in CreateUser component */}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FormCard>
+
+          <FormCard
             title="Account Details"
             description="Login credentials and account status"
           >
@@ -231,6 +264,80 @@ export function EditUser({ userId }: { userId: string }) {
                   </FormItem>
                 )}
               />
+            </div>
+          </FormCard>
+
+          <FormCard
+            title="Domain Settings"
+            description="Set the user's scope and area"
+          >
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="scope"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Scope</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-col space-y-1"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="ward" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Ward Level Access
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="municipality" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Municipality Level Access
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {watchScope === "ward" && (
+                <FormField
+                  control={form.control}
+                  name="wardNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ward Number</FormLabel>
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(parseInt(value))
+                        }
+                        value={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select ward" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {[1, 2, 3, 4, 5, 6, 7].map((ward) => (
+                            <SelectItem key={ward} value={ward.toString()}>
+                              Ward {ward}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
           </FormCard>
         </form>
