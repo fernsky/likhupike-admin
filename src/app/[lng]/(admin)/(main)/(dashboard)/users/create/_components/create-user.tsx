@@ -26,9 +26,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  createEnumeratorSchema,
-  type CreateEnumeratorInput,
-} from "@/server/api/routers/enumerators/enumerators.schema";
+  createUserSchema,
+  type CreateUserInput,
+} from "@/server/api/routers/users/user.schema";
 import {
   Select,
   SelectTrigger,
@@ -55,13 +55,13 @@ const FormCard = ({
   </Card>
 );
 
-export function CreateEnumerator() {
+export function CreateUser() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const createEnumerator = api.enumerator.create.useMutation();
+  const createUser = api.userManagement.create.useMutation();
 
-  const form = useForm<CreateEnumeratorInput>({
-    resolver: zodResolver(createEnumeratorSchema),
+  const form = useForm<CreateUserInput>({
+    resolver: zodResolver(createUserSchema),
     defaultValues: {
       name: "",
       phoneNumber: "",
@@ -73,15 +73,15 @@ export function CreateEnumerator() {
     },
   });
 
-  async function onSubmit(values: CreateEnumeratorInput) {
+  async function onSubmit(values: CreateUserInput) {
     setIsLoading(true);
     try {
-      await createEnumerator.mutateAsync(values);
-      toast.success("Enumerator created successfully");
-      router.push("/enumerators");
+      await createUser.mutateAsync(values);
+      toast.success("User created successfully");
+      router.push("/users");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create enumerator",
+        error instanceof Error ? error.message : "Failed to create user",
       );
     } finally {
       setIsLoading(false);
@@ -96,7 +96,7 @@ export function CreateEnumerator() {
       >
         <FormCard
           title="Personal Information"
-          description="Basic details about the enumerator"
+          description="Basic details about the user"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField
@@ -231,7 +231,7 @@ export function CreateEnumerator() {
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? <LoadingButton /> : "Create Enumerator"}
+            {isLoading ? <LoadingButton /> : "Create User"}
           </Button>
         </div>
       </form>

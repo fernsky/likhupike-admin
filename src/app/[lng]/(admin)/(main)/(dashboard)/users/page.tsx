@@ -1,5 +1,5 @@
 import React from "react";
-import { EnumeratorsList } from "@/components/dashboard/enumerators-list";
+import { EnumeratorsList } from "./_components/users-list";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ const EnumeratorsPage: React.FC = () => {
         <Link href="/enumerators/create">
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />
-            Add Enumerator
+            Add User
           </Button>
         </Link>
       }

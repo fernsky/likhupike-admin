@@ -30,3 +30,22 @@ export function EnumeratorDropdown({ enumeratorId }: { enumeratorId: string }) {
     </DropdownMenu>
   );
 }
+
+export function UserDropdown({ userId }: { userId: string }) {
+  const router = useRouter();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost">
+          <EllipsisVertical className="w-3 h-3" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => router.push(`/users/${userId}/edit`)}>
+          Edit Details
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

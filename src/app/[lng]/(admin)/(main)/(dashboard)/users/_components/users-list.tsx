@@ -11,18 +11,18 @@ import {
 import { api } from "@/trpc/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useMediaQuery } from "react-responsive";
-import { EnumeratorDropdown } from "./enumerator-dropdown";
+import { UserDropdown } from "./user-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Phone, Mail, MapPin, User2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function EnumeratorsList() {
-  const [enumerators] = api.useQueries((t) => [t.admin.getEnumerators()]);
+export function UsersList() {
+  const [users] = api.useQueries((t) => [t.userManagement.getAll()]);
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const router = useRouter();
 
-  if (enumerators.isLoading) {
+  if (users.isLoading) {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
@@ -32,12 +32,12 @@ export function EnumeratorsList() {
     );
   }
 
-  if (!enumerators.data?.length) {
+  if (!users.data?.length) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
         <User2 className="h-12 w-12 text-muted-foreground/50" />
         <p className="mt-4 text-lg font-medium text-muted-foreground">
-          No enumerators found
+          No users found
         </p>
       </div>
     );
@@ -57,50 +57,50 @@ export function EnumeratorsList() {
     if ((e.target as HTMLElement).closest(".dropdown-trigger")) {
       return;
     }
-    router.push(`/enumerators/${id}`);
+    router.push(`/users/${id}`);
   };
 
   return (
     <>
       {isMobile ? (
         <div className="space-y-4 px-2">
-          {enumerators.data.map((enumerator) => (
+          {users.data.map((user) => (
             <Card
-              key={enumerator.id}
+              key={user.id}
               className="overflow-hidden transition-all hover:shadow-md cursor-pointer"
-              onClick={(e) => handleClick(enumerator.id, e)}
+              onClick={(e) => handleClick(user.id, e)}
             >
               <CardContent className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-semibold">{enumerator.name}</h3>
+                    <h3 className="text-xl font-semibold">{user.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      ID: {enumerator.id.slice(0, 8)}
+                      ID: {user.id.slice(0, 8)}
                     </p>
                   </div>
-                  {getStatusBadge(enumerator.isActive ?? false)}
+                  {getStatusBadge(user.isActive ?? false)}
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Phone className="h-4 w-4" />
-                    <span>{enumerator.phoneNumber}</span>
+                    <span>{user.phoneNumber}</span>
                   </div>
-                  {enumerator.email && (
+                  {user.email && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Mail className="h-4 w-4" />
-                      <span>{enumerator.email}</span>
+                      <span>{user.email}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4" />
-                    <span>Ward {enumerator.wardNumber}</span>
+                    <span>Ward {user.wardNumber}</span>
                   </div>
                 </div>
 
                 <div className="mt-4 flex justify-end">
                   <div className="dropdown-trigger">
-                    <EnumeratorDropdown enumeratorId={enumerator.id} />
+                    <UserDropdown userId={user.id} />
                   </div>
                 </div>
               </CardContent>
@@ -120,17 +120,17 @@ export function EnumeratorsList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {enumerators.data.map((enumerator) => (
+              {users.data.map((user) => (
                 <TableRow
-                  key={enumerator.id}
+                  key={user.id}
                   className="hover:bg-muted/50 cursor-pointer"
-                  onClick={(e) => handleClick(enumerator.id, e)}
+                  onClick={(e) => handleClick(user.id, e)}
                 >
                   <TableCell>
                     <div>
-                      <p className="font-medium">{enumerator.name}</p>
+                      <p className="font-medium">{user.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        ID: {enumerator.id.slice(0, 8)}
+                        ID: {user.id.slice(0, 8)}
                       </p>
                     </div>
                   </TableCell>
@@ -138,12 +138,12 @@ export function EnumeratorsList() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{enumerator.phoneNumber}</span>
+                        <span>{user.phoneNumber}</span>
                       </div>
-                      {enumerator.email && (
+                      {user.email && (
                         <div className="flex items-center gap-2">
                           <Mail className="h-4 w-4 text-muted-foreground" />
-                          <span>{enumerator.email}</span>
+                          <span>{user.email}</span>
                         </div>
                       )}
                     </div>
@@ -151,17 +151,15 @@ export function EnumeratorsList() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      Ward {enumerator.wardNumber}
+                      Ward {user.wardNumber}
                     </div>
                   </TableCell>
                   <TableCell>
-                    {getStatusBadge(enumerator.isActive ?? false)}
+                    {getStatusBadge(user.isActive ?? false)}
                   </TableCell>
-                  <TableCell>
-                    <div className="dropdown-trigger">
-                      <EnumeratorDropdown enumeratorId={enumerator.id} />
-                    </div>
-                  </TableCell>
+                  <div className="dropdown-trigger">
+                    <UserDropdown userId={user.id} />
+                  </div>
                 </TableRow>
               ))}
             </TableBody>

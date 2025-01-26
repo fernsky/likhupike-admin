@@ -26,9 +26,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  updateEnumeratorSchema,
-  type UpdateEnumeratorInput,
-} from "@/server/api/routers/enumerators/enumerators.schema";
+  updateUserSchema,
+  type UpdateUserInput,
+} from "@/server/api/routers/users/user.schema";
 import { z } from "zod";
 
 const FormCard = ({
@@ -49,22 +49,22 @@ const FormCard = ({
   </Card>
 );
 
-export function EditEnumerator({ enumeratorId }: { enumeratorId: string }) {
+export function EditUser({ userId }: { userId: string }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const updateEnumerator = api.enumerator.update.useMutation();
-  const resetPassword = api.enumerator.resetPassword.useMutation();
-  const { data: enumerator, isLoading: isLoadingEnumerator } =
-    api.enumerator.getById.useQuery(enumeratorId);
+  const updateUser = api.userManagement.update.useMutation();
+  const resetPassword = api.userManagement.resetPassword.useMutation();
+  const { data: user, isLoading: isLoadingUser } =
+    api.userManagement.getById.useQuery(userId);
 
-  const form = useForm<UpdateEnumeratorInput>({
-    resolver: zodResolver(updateEnumeratorSchema),
+  const form = useForm<UpdateUserInput>({
+    resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      enumeratorId: enumeratorId,
+      userId: userId,
       name: "",
       phoneNumber: "",
       email: "",
@@ -75,28 +75,28 @@ export function EditEnumerator({ enumeratorId }: { enumeratorId: string }) {
   });
 
   useEffect(() => {
-    if (enumerator) {
+    if (user) {
       form.reset({
-        enumeratorId: enumeratorId,
-        name: enumerator.name ?? undefined,
-        phoneNumber: enumerator.phoneNumber ?? undefined,
-        email: enumerator.email ?? undefined,
-        userName: enumerator.userName ?? undefined,
-        wardNumber: enumerator.wardNumber ?? undefined,
-        isActive: enumerator.isActive ?? true,
+        userId: userId,
+        name: user.name ?? undefined,
+        phoneNumber: user.phoneNumber ?? undefined,
+        email: user.email ?? undefined,
+        userName: user.userName ?? undefined,
+        wardNumber: user.wardNumber ?? undefined,
+        isActive: user.isActive ?? true,
       });
     }
-  }, [enumerator, form, enumeratorId]);
+  }, [user, form, userId]);
 
-  async function onSubmit(values: UpdateEnumeratorInput) {
+  async function onSubmit(values: UpdateUserInput) {
     setIsLoading(true);
     try {
-      await updateEnumerator.mutateAsync(values);
-      toast.success("Enumerator updated successfully");
-      router.push("/enumerators");
+      await updateUser.mutateAsync(values);
+      toast.success("User updated successfully");
+      router.push("/users");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to update enumerator",
+        error instanceof Error ? error.message : "Failed to update user",
       );
     } finally {
       setIsLoading(false);
@@ -115,7 +115,7 @@ export function EditEnumerator({ enumeratorId }: { enumeratorId: string }) {
 
     try {
       await resetPassword.mutateAsync({
-        enumeratorId,
+        userId,
         password,
         confirmPassword,
       });
@@ -130,7 +130,7 @@ export function EditEnumerator({ enumeratorId }: { enumeratorId: string }) {
     }
   };
 
-  if (isLoadingEnumerator) {
+  if (isLoadingUser) {
     return <div>Loading...</div>;
   }
 
@@ -138,13 +138,13 @@ export function EditEnumerator({ enumeratorId }: { enumeratorId: string }) {
     <div className="space-y-6 px-2 lg:px-10">
       <Form {...form}>
         <form
-          id="enumerator-form"
+          id="user-form"
           className="grid gap-3"
           onSubmit={form.handleSubmit(onSubmit)}
         >
           <FormCard
             title="Personal Information"
-            description="Basic details about the enumerator"
+            description="Basic details about the user"
           >
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <FormField

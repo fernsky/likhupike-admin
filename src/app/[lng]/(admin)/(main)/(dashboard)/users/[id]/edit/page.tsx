@@ -24,9 +24,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  updateEnumeratorSchema,
-  type UpdateEnumeratorInput,
-} from "@/server/api/routers/enumerators/enumerators.schema";
+  updateUserSchema,
+  type UpdateUserInput,
+} from "@/server/api/routers/users/user.schema";
 import { z } from "zod";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -64,15 +64,15 @@ export default function EditEnumeratorPage({
 }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const updateEnumerator = api.enumerator.update.useMutation();
-  const resetPassword = api.enumerator.resetPassword.useMutation();
+  const updateEnumerator = api.userManagement.update.useMutation();
+  const resetPassword = api.userManagement.resetPassword.useMutation();
   const { data: enumerator, isLoading: isLoadingEnumerator } =
-    api.enumerator.getById.useQuery(params.id);
+    api.userManagement.getById.useQuery(params.id);
 
-  const form = useForm<UpdateEnumeratorInput>({
-    resolver: zodResolver(updateEnumeratorSchema),
+  const form = useForm<UpdateUserInput>({
+    resolver: zodResolver(updateUserSchema),
     defaultValues: {
-      enumeratorId: params.id,
+      userId: params.id,
       name: "",
       phoneNumber: "",
       email: "",
@@ -104,7 +104,7 @@ export default function EditEnumeratorPage({
   useEffect(() => {
     if (enumerator) {
       form.reset({
-        enumeratorId: params.id,
+        userId: params.id,
         name: enumerator.name ?? undefined,
         phoneNumber: enumerator.phoneNumber ?? undefined,
         email: enumerator.email ?? undefined,
@@ -115,7 +115,7 @@ export default function EditEnumeratorPage({
     }
   }, [enumerator, form, params.id]);
 
-  async function onSubmit(values: UpdateEnumeratorInput) {
+  async function onSubmit(values: UpdateUserInput) {
     setIsLoading(true);
     try {
       await updateEnumerator.mutateAsync(values);
@@ -133,7 +133,7 @@ export default function EditEnumeratorPage({
   const onPasswordSubmit = async (data: PasswordFormValues) => {
     try {
       await resetPassword.mutateAsync({
-        enumeratorId: params.id,
+        userId: params.id,
         password: data.password,
         confirmPassword: data.confirmPassword,
       });

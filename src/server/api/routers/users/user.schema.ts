@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createEnumeratorSchema = z.object({
+export const createUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   phoneNumber: z.string().length(10, "Phone number must be 10 digits"),
   email: z.string().email("Invalid email").optional(),
@@ -10,9 +10,9 @@ export const createEnumeratorSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export const resetEnumeratorPasswordSchema = z
+export const resetUserPasswordSchema = z
   .object({
-    enumeratorId: z.string(),
+    userId: z.string(),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z
       .string()
@@ -23,8 +23,8 @@ export const resetEnumeratorPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const updateEnumeratorSchema = z.object({
-  enumeratorId: z.string(),
+export const updateUserSchema = z.object({
+  userId: z.string(),
   name: z.string().min(1, "Name is required").optional(),
   phoneNumber: z
     .string()
@@ -39,8 +39,6 @@ export const updateEnumeratorSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export type CreateEnumeratorInput = z.infer<typeof createEnumeratorSchema>;
-export type ResetEnumeratorPasswordInput = z.infer<
-  typeof resetEnumeratorPasswordSchema
->;
-export type UpdateEnumeratorInput = z.infer<typeof updateEnumeratorSchema>;
+export type CreateUserInput = z.infer<typeof createUserSchema>;
+export type ResetUserPasswordInput = z.infer<typeof resetUserPasswordSchema>;
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;

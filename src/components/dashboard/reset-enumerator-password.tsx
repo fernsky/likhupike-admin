@@ -20,7 +20,7 @@ import {
 import {
   resetEnumeratorPasswordSchema,
   type ResetEnumeratorPasswordInput,
-} from "@/server/api/routers/enumerators/enumerators.schema";
+} from "@/server/api/routers/users/user.schema";
 
 export function ResetEnumeratorPassword({
   enumeratorId,
