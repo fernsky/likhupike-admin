@@ -21,7 +21,7 @@ export default function EnumeratorDetailsPage({
   params: { id: string };
 }) {
   const router = useRouter();
-  const { data: enumerator, isLoading } = api.enumerator.getById.useQuery(
+  const { data: enumerator, isLoading } = api.userManagement.getById.useQuery(
     params.id,
   );
 
@@ -148,18 +148,6 @@ export default function EnumeratorDetailsPage({
                 <p className="text-sm font-medium text-muted-foreground">
                   Status
                 </p>
-                <div className="mt-1">
-                  <Badge
-                    variant={enumerator.isActive ? "default" : "secondary"}
-                    className={
-                      enumerator.isActive
-                        ? "bg-green-600 hover:bg-green-700"
-                        : ""
-                    }
-                  >
-                    {enumerator.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
               </div>
             </div>
           </div>

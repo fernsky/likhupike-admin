@@ -43,15 +43,6 @@ export function UsersList() {
     );
   }
 
-  const getStatusBadge = (isActive: boolean) => (
-    <Badge
-      variant={isActive ? "default" : "secondary"}
-      className={isActive ? "bg-green-600 hover:bg-green-700" : ""}
-    >
-      {isActive ? "Active" : "Inactive"}
-    </Badge>
-  );
-
   const handleClick = (id: string, e: React.MouseEvent) => {
     // Don't navigate if clicking on the dropdown
     if ((e.target as HTMLElement).closest(".dropdown-trigger")) {
@@ -78,7 +69,6 @@ export function UsersList() {
                       ID: {user.id.slice(0, 8)}
                     </p>
                   </div>
-                  {getStatusBadge(user.isActive ?? false)}
                 </div>
 
                 <div className="space-y-2">
@@ -154,9 +144,7 @@ export function UsersList() {
                       Ward {user.wardNumber}
                     </div>
                   </TableCell>
-                  <TableCell>
-                    {getStatusBadge(user.isActive ?? false)}
-                  </TableCell>
+
                   <div className="dropdown-trigger">
                     <UserDropdown userId={user.id} />
                   </div>

@@ -7,7 +7,6 @@ export const createUserSchema = z.object({
   userName: z.string().min(3, "Username must be at least 3 characters"),
   wardNumber: z.number().min(1, "Ward number is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  isActive: z.boolean().optional(),
 });
 
 export const resetUserPasswordSchema = z
@@ -36,7 +35,6 @@ export const updateUserSchema = z.object({
     .min(3, "Username must be at least 3 characters")
     .optional(),
   wardNumber: z.number().min(1, "Ward number is required").optional(),
-  isActive: z.boolean().optional(),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;

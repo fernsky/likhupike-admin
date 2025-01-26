@@ -78,7 +78,6 @@ export default function EditEnumeratorPage({
       email: "",
       userName: "",
       wardNumber: 1,
-      isActive: true,
     },
   });
 
@@ -110,7 +109,6 @@ export default function EditEnumeratorPage({
         email: enumerator.email ?? undefined,
         userName: enumerator.userName ?? undefined,
         wardNumber: enumerator.wardNumber ?? undefined,
-        isActive: enumerator.isActive ?? true,
       });
     }
   }, [enumerator, form, params.id]);
@@ -276,25 +274,6 @@ export default function EditEnumeratorPage({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isActive"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="flex items-center justify-between space-x-2">
-                        <FormLabel>Active Status</FormLabel>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </div>
                       <FormMessage />
                     </FormItem>
                   )}

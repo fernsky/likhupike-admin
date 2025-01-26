@@ -1,16 +1,16 @@
 import React from "react";
-import { EnumeratorsList } from "./_components/users-list";
+import { UsersList } from "./_components/users-list";
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 
-const EnumeratorsPage: React.FC = () => {
+const UsersPage: React.FC = () => {
   return (
     <ContentLayout
-      title="Enumerators"
+      title="Users"
       actions={
-        <Link href="/enumerators/create">
+        <Link href="/users/create">
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />
             Add User
@@ -19,10 +19,10 @@ const EnumeratorsPage: React.FC = () => {
       }
     >
       <div className="container px-0">
-        <EnumeratorsList />
+        <UsersList />
       </div>
     </ContentLayout>
   );
 };
 
-export default EnumeratorsPage;
+export default UsersPage;

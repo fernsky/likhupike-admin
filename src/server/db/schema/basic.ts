@@ -28,7 +28,6 @@ export const users = pgTable(
     avatar: varchar("avatar", { length: 255 }),
     wardNumber: integer("ward_number"),
     role: rolesEnum("role").default("enumerator"),
-    isActive: boolean("is_active").default(true),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(
       () => new Date(),

@@ -70,7 +70,6 @@ export function EditUser({ userId }: { userId: string }) {
       email: "",
       userName: "",
       wardNumber: 1,
-      isActive: true,
     },
   });
 
@@ -83,7 +82,6 @@ export function EditUser({ userId }: { userId: string }) {
         email: user.email ?? undefined,
         userName: user.userName ?? undefined,
         wardNumber: user.wardNumber ?? undefined,
-        isActive: user.isActive ?? true,
       });
     }
   }, [user, form, userId]);
@@ -229,25 +227,6 @@ export function EditUser({ userId }: { userId: string }) {
                         min={1}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem>
-                    <div className="flex items-center justify-between space-x-2">
-                      <FormLabel>Active Status</FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

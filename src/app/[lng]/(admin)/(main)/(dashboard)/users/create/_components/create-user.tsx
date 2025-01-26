@@ -69,7 +69,6 @@ export function CreateUser() {
       userName: "",
       wardNumber: 1,
       password: "",
-      isActive: true,
     },
   });
 
@@ -204,22 +203,6 @@ export function CreateUser() {
                     <Input {...field} type="password" />
                   </FormControl>
                   <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between space-y-0">
-                  <FormLabel>Active Status</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
                 </FormItem>
               )}
             />
