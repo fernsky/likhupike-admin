@@ -1,100 +1,75 @@
-import { pgTable, varchar, integer } from "drizzle-orm/pg-core";
-import { family } from "./family";
+import { pgTable, text, integer } from "drizzle-orm/pg-core";
 
-export const individual = pgTable("individual", {
-  id: varchar("id", { length: 48 }).primaryKey().notNull(),
-  familyId: varchar("family_id", { length: 48 }).references(() => family.id),
+const likhupikeIndividual = pgTable("buddhashanti_individual", {
+  id: text("id").primaryKey().notNull(),
+  tenantId: text("tenant_id").default("khajura"),
+  parentId: text("parent_id").notNull(),
   wardNo: integer("ward_no").notNull(),
-
-  // Personal Information
-  name: varchar("name", { length: 255 }).notNull(),
-  gender: varchar("gender", { length: 100 }).notNull(),
+  deviceId: text("device_id"),
+  name: text("name").notNull(),
+  gender: text("gender").notNull(),
   age: integer("age"),
-  familyRole: varchar("family_role", { length: 100 }),
-
-  // Cultural and Demographic Information
-  citizenOf: varchar("citizen_of", { length: 100 }),
-  citizenOfOther: varchar("citizen_of_other", { length: 255 }),
-  caste: varchar("caste", { length: 100 }),
-  casteOther: varchar("caste_other", { length: 255 }),
-  ancestorLanguage: varchar("ancestor_language", { length: 100 }),
-  ancestorLanguageOther: varchar("ancestor_language_other", { length: 255 }),
-  primaryMotherTongue: varchar("primary_mother_tongue", { length: 100 }),
-  primaryMotherTongueOther: varchar("primary_mother_tongue_other", {
-    length: 255,
-  }),
-  religion: varchar("religion", { length: 100 }),
-  religionOther: varchar("religion_other", { length: 255 }),
-
-  // Marital Status
-  maritalStatus: varchar("marital_status", { length: 100 }),
+  familyRole: text("family_role"),
+  citizenOf: text("citizen_of"),
+  citizenOfOther: text("citizen_of_other"),
+  caste: text("caste"),
+  casteOther: text("caste_other"),
+  ancestorLanguage: text("ancestor_language"),
+  ancestorLanguageOther: text("ancestor_language_other"),
+  primaryMotherTongue: text("primary_mother_tongue"),
+  primaryMotherTongueOther: text("primary_mother_tongue_other"),
+  religion: text("religion"),
+  religionOther: text("religion_other"),
+  maritalStatus: text("marital_status"),
   marriedAge: integer("married_age"),
-
-  // Health Information
-  hasChronicDisease: varchar("has_chronic_disease", { length: 100 }),
-  primaryChronicDisease: varchar("primary_chronic_disease", { length: 100 }),
-  isSanitized: varchar("is_sanitized", { length: 100 }),
-
-  // Disability Information
-  isDisabled: varchar("is_disabled", { length: 100 }),
-  disabilityType: varchar("disability_type", { length: 100 }),
-  disabilityTypeOther: varchar("disability_type_other", { length: 255 }),
-  disabilityCause: varchar("disability_cause", { length: 100 }),
-
-  // Documents
-  hasBirthCertificate: varchar("has_birth_certificate", { length: 100 }),
-
-  // Fertility and Birth Information
-  gaveLiveBirth: varchar("gave_live_birth", { length: 100 }),
+  hasChronicDisease: text("has_chronic_disease"),
+  primaryChronicDisease: text("primary_chronic_disease"),
+  isSanitized: text("is_sanitized"),
+  isDisabled: text("is_disabled"),
+  disabilityType: text("disability_type"),
+  disabilityTypeOther: text("disability_type_other"),
+  disabilityCause: text("disability_cause"),
+  hasBirthCertificate: text("has_birth_certificate"),
+  gaveLiveBirth: text("gave_live_birth"),
   aliveSons: integer("alive_sons"),
   aliveDaughters: integer("alive_daughters"),
   totalBornChildren: integer("total_born_children"),
-  hasDeadChildren: varchar("has_dead_children", { length: 100 }),
+  hasDeadChildren: text("has_dead_children"),
   deadSons: integer("dead_sons"),
   deadDaughters: integer("dead_daughters"),
   totalDeadChildren: integer("total_dead_children"),
-
-  // Recent Birth Details
-  gaveRecentLiveBirth: varchar("gave_recent_live_birth", { length: 100 }),
+  gaveRecentLiveBirth: text("gave_recent_live_birth"),
   recentBornSons: integer("recent_born_sons"),
   recentBornDaughters: integer("recent_born_daughters"),
   totalRecentChildren: integer("total_recent_children"),
-  recentDeliveryLocation: varchar("recent_delivery_location", { length: 100 }),
+  recentDeliveryLocation: text("recent_delivery_location"),
   prenatalCheckups: integer("prenatal_checkups"),
   firstDeliveryAge: integer("first_delivery_age"),
-
-  // Presence and Migration Status
-  isPresent: varchar("is_present", { length: 100 }),
+  isPresent: text("is_present"),
   absenteeAge: integer("absentee_age"),
-  absenteeEducationalLevel: varchar("absentee_educational_level", {
-    length: 100,
-  }),
-  absenceReason: varchar("absence_reason", { length: 100 }),
-  absenteeLocation: varchar("absentee_location", { length: 255 }),
-  absenteeProvince: varchar("absentee_province", { length: 100 }),
-  absenteeDistrict: varchar("absentee_district", { length: 100 }),
-  absenteeCountry: varchar("absentee_country", { length: 100 }),
-  absenteeHasSentCash: varchar("absentee_has_sent_cash", { length: 100 }),
+  absenteeEducationalLevel: text("absentee_educational_level"),
+  absenceReason: text("absence_reason"),
+  absenteeLocation: text("absentee_location"),
+  absenteeProvince: text("absentee_province"),
+  absenteeDistrict: text("absentee_district"),
+  absenteeCountry: text("absentee_country"),
+  absenteeHasSentCash: text("absentee_has_sent_cash"),
   absenteeCashAmount: integer("absentee_cash_amount"),
-
-  // Education Information
-  literacyStatus: varchar("literacy_status", { length: 100 }),
-  schoolPresenceStatus: varchar("school_presence_status", { length: 100 }),
-  educationalLevel: varchar("educational_level", { length: 100 }),
-  primarySubject: varchar("primary_subject", { length: 100 }),
-  goesSchool: varchar("goes_school", { length: 100 }),
-  schoolBarrier: varchar("school_barrier", { length: 100 }),
-
-  // Training and Skills
-  hasTraining: varchar("has_training", { length: 100 }),
-  training: varchar("training", { length: 100 }),
+  literacyStatus: text("literacy_status"),
+  schoolPresenceStatus: text("school_presence_status"),
+  educationalLevel: text("educational_level"),
+  primarySubject: text("primary_subject"),
+  goesSchool: text("goes_school"),
+  schoolBarrier: text("school_barrier"),
+  hasTraining: text("has_training"),
+  training: text("training"),
   monthsTrained: integer("months_trained"),
-  primarySkill: varchar("primary_skill", { length: 100 }),
-  hasInternetAccess: varchar("has_internet_access", { length: 100 }),
-
-  // Occupation and Work
-  financialWorkDuration: varchar("financial_work_duration", { length: 100 }),
-  primaryOccupation: varchar("primary_occupation", { length: 100 }),
-  workBarrier: varchar("work_barrier", { length: 100 }),
-  workAvailability: varchar("work_availability", { length: 100 }),
+  primarySkill: text("primary_skill"),
+  hasInternetAccess: text("has_internet_access"),
+  financialWorkDuration: text("financial_work_duration"),
+  primaryOccupation: text("primary_occupation"),
+  workBarrier: text("work_barrier"),
+  workAvailability: text("work_availability"),
 });
+
+export default likhupikeIndividual;
