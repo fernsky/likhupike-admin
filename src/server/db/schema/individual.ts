@@ -1,6 +1,6 @@
 import { pgTable, text, integer } from "drizzle-orm/pg-core";
 
-const likhupikeIndividual = pgTable("buddhashanti_individual", {
+const likhupikeIndividual = pgTable("likhupike_individual", {
   id: text("id").primaryKey().notNull(),
   tenantId: text("tenant_id").default("khajura"),
   parentId: text("parent_id").notNull(),

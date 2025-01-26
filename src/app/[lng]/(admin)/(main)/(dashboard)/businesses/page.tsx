@@ -1,4 +1,4 @@
-import ListBuildings from "@/components/dashboard/list-buildings";
+import ListBuildings from "@/components/dashboard/list-individuals";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { Paths } from "@/lib/constants";
 import { redirect } from "next/navigation";
