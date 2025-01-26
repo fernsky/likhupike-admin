@@ -1,7 +1,5 @@
 import { timestamp, pgTable, varchar, json } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import postgres from "postgres";
-import { drizzle } from "drizzle-orm/postgres-js";
 import { geometry } from "../geographical";
 
 export const parts = pgTable("parts", {
