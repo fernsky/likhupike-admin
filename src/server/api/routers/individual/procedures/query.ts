@@ -4,6 +4,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import likhupikeIndividual from "@/server/db/schema/individual";
+import { updateIndividualSchema } from "../individual.schema";
 
 export const getAllIndividuals = protectedProcedure
   .input(
@@ -67,6 +68,46 @@ export const getIndividualById = protectedProcedure
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "Failed to fetch individual",
+      });
+    }
+  });
+
+export const updateIndividualBasicInfo = protectedProcedure
+  .input(
+    z.object({
+      id: z.string().min(1, "Individual ID is required"),
+      parentId: z.string().min(1, "Parent ID is required"),
+      wardNo: z.number().min(1, "Ward number is required"),
+      name: z.string().min(1, "Name is required"),
+    })
+  )
+  .mutation(async ({ input }) => {
+    try {
+      const updated = await db
+        .update(likhupikeIndividual)
+        .set({
+          parentId: input.parentId,
+          wardNo: input.wardNo,
+          name: input.name,
+        })
+        .where(eq(likhupikeIndividual.id, input.id))
+        .returning();
+
+      if (!updated[0]) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Individual not found",
+        });
+      }
+
+      return updated[0];
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to update individual",
       });
     }
   });

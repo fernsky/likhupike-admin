@@ -50,7 +50,7 @@ export default function IndividualDetails({
       title="Individual Profile"
       actions={
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Link href="/individuals">
+          <Link href="/individual">
             <Button variant="outline" size="sm" className="w-full sm:w-auto">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
             </Button>
@@ -62,7 +62,7 @@ export default function IndividualDetails({
               </Button>
             </Link>
           )}
-          <Link href={`/individuals/edit/${params.id}`}>
+          <Link href={`/individual/edit/${params.id}`}>
             <Button size="sm" className="w-full sm:w-auto">
               <Edit className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
