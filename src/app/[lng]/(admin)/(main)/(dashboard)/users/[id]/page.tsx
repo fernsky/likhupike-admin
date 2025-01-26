@@ -13,9 +13,21 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Phone, Mail, MapPin, User2, UserCheck } from "lucide-react";
+import {
+  Phone,
+  Mail,
+  MapPin,
+  User2,
+  UserCheck,
+  Shield,
+  ShieldCheck,
+  ShieldAlert,
+  Globe,
+  Building,
+  Clock,
+} from "lucide-react";
 
-export default function EnumeratorDetailsPage({
+export default function UserDetailsPage({
   params,
 }: {
   params: { id: string };
@@ -90,13 +102,105 @@ export default function EnumeratorDetailsPage({
     </div>
   );
 
+  const RoleBadge = ({ role }: { role: string }) => {
+    const roleConfig = {
+      admin: {
+        icon: ShieldAlert,
+        className: "bg-destructive/10 text-destructive hover:bg-destructive/20",
+        label: "Administrator",
+        description: "Full system access with user management capabilities",
+      },
+      editor: {
+        icon: ShieldCheck,
+        className: "bg-warning/10 text-warning hover:bg-warning/20",
+        label: "Editor",
+        description: "Can edit and manage survey data",
+      },
+      viewer: {
+        icon: Shield,
+        className: "bg-info/10 text-info hover:bg-info/20",
+        label: "Viewer",
+        description: "Read-only access to view survey data",
+      },
+    }[role] ?? {
+      icon: Shield,
+      className: "bg-muted text-muted-foreground",
+      label: role,
+      description: "Unknown role type",
+    };
+
+    const Icon = roleConfig.icon;
+
+    return (
+      <div className="flex flex-col space-y-2">
+        <Badge
+          variant="outline"
+          className={`gap-2 ${roleConfig.className} text-base py-2 px-4`}
+        >
+          <Icon className="h-4 w-4" />
+          <span className="font-medium">{roleConfig.label}</span>
+        </Badge>
+        <p className="text-sm text-muted-foreground pl-1">
+          {roleConfig.description}
+        </p>
+      </div>
+    );
+  };
+
+  const ScopeBadge = ({
+    scope,
+    wardNumber,
+  }: {
+    scope: string;
+    wardNumber?: number | null;
+  }) => {
+    const scopeConfig = {
+      municipality: {
+        icon: Building,
+        className: "bg-primary/10 text-primary hover:bg-primary/20",
+        label: "Municipality Level",
+        description: "Access to data across all wards",
+      },
+      ward: {
+        icon: MapPin,
+        className: "bg-success/10 text-success hover:bg-success/20",
+        label: `Ward ${wardNumber}`,
+        description: "Access limited to specific ward data",
+      },
+    }[scope] ?? {
+      icon: Globe,
+      className: "bg-muted text-muted-foreground",
+      label: scope,
+      description: "Unknown scope type",
+    };
+
+    const Icon = scopeConfig.icon;
+
+    return (
+      <div className="flex flex-col space-y-2">
+        <Badge
+          variant="outline"
+          className={`gap-2 ${scopeConfig.className} text-base py-2 px-4`}
+        >
+          <Icon className="h-4 w-4" />
+          <span className="font-medium">{scopeConfig.label}</span>
+        </Badge>
+        <p className="text-sm text-muted-foreground pl-1">
+          {scopeConfig.description}
+        </p>
+      </div>
+    );
+  };
+
   return (
     <ContentLayout
-      title="Enumerator Details"
+      title="User Details"
       subtitle={`ID: ${params.id}`}
       actions={
         <div className="flex gap-2">
-          <Button onClick={() => router.push("/users")}>Back to List</Button>
+          <Button variant="outline" onClick={() => router.push("/users")}>
+            Back to List
+          </Button>
           <Button onClick={() => router.push(`/users/${params.id}/edit`)}>
             Edit User
           </Button>
@@ -104,54 +208,88 @@ export default function EnumeratorDetailsPage({
       }
     >
       <div className="space-y-6 px-2 lg:px-10">
-        <FormCard
-          title="Basic Information"
-          description="Personal and contact details of the enumerator"
-        >
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <InfoItem icon={User2} label="Full Name" value={enumerator.name} />
-            <InfoItem
-              icon={Phone}
-              label="Phone Number"
-              value={enumerator.phoneNumber}
-            />
-            <InfoItem
-              icon={Mail}
-              label="Email Address"
-              value={enumerator.email}
-            />
-          </div>
-        </FormCard>
-
-        <FormCard
-          title="Account Information"
-          description="Account credentials and work assignment details"
-        >
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <InfoItem
-              icon={UserCheck}
-              label="Username"
-              value={enumerator.userName}
-            />
-            <InfoItem
-              icon={MapPin}
-              label="Assigned Ward"
-              value={`Ward ${enumerator.wardNumber}`}
-            />
-            <div className="flex items-start space-x-3">
-              <div className="mt-0.5">
-                <User2 className="h-4 w-4 text-muted-foreground" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <FormCard
+            title="Personal Information"
+            description="Contact and identification details"
+          >
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User2 className="h-10 w-10 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold">{enumerator.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    User since {new Date().toLocaleDateString()}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Status
-                </p>
+
+              <div className="grid gap-4">
+                <InfoItem
+                  icon={UserCheck}
+                  label="Username"
+                  value={enumerator.userName}
+                />
+                <InfoItem
+                  icon={Phone}
+                  label="Phone Number"
+                  value={enumerator.phoneNumber}
+                />
+                <InfoItem
+                  icon={Mail}
+                  label="Email Address"
+                  value={enumerator.email}
+                />
               </div>
             </div>
+          </FormCard>
+
+          <FormCard
+            title="Access Control"
+            description="Role and permissions configuration"
+          >
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">
+                  Role & Permissions
+                </h4>
+                <RoleBadge role={enumerator.role ?? "viewer"} />
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground mb-3">
+                  Access Scope
+                </h4>
+                <ScopeBadge
+                  scope={enumerator.scope ?? "ward"}
+                  wardNumber={enumerator.wardNumber}
+                />
+              </div>
+            </div>
+          </FormCard>
+        </div>
+
+        <FormCard
+          title="Activity & Status"
+          description="User activity information and current status"
+        >
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Last Active
+                  </p>
+                  <p className="text-lg font-semibold">2 hours ago</p>
+                </div>
+              </div>
+            </div>
+            {/* Add more activity stats as needed */}
           </div>
         </FormCard>
-
-        {/* Add more sections as needed */}
       </div>
     </ContentLayout>
   );

@@ -274,5 +274,5 @@ export function parseBuilding(data: RawBuildingData) {
     road_status: r.road_status, // e.g., Graveled, Paved
   };
 
-  return jsonToPostgres("staging_buddhashanti_buildings", payload);
+  return jsonToPostgres("staging_Likhupike_buildings", payload);
 }

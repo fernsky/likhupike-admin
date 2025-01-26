@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import MUNICIPALITY_LOGO from "@/lib/assets/buddhashanti-logo.png";
+import MUNICIPALITY_LOGO from "@/lib/assets/Likhupike-logo.png";
 
 interface HeaderDetails {
   enumeratorName: string;
@@ -35,13 +35,13 @@ export const setupPDFHeader = async (doc: jsPDF, details: HeaderDetails) => {
   // Initialize A4 in portrait
   doc.setProperties({
     title: `Survey Form - Area ${details.areaCode}`,
-    creator: "Buddhashanti Municipality",
+    creator: "Likhupike Municipality",
   });
 
   // Set title and main header - slightly smaller font sizes
   doc.setFontSize(14);
   doc.text(
-    "Buddhashanti Rural Municipality",
+    "Likhupike Rural Municipality",
     doc.internal.pageSize.width / 2,
     15,
     { align: "center" },

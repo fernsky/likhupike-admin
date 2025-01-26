@@ -44,7 +44,7 @@ export function Sidebar() {
                   : "translate-x-0 opacity-100",
               )}
             >
-              Buddhashanti
+              Likhupike
             </h1>
           </Link>
         </Button>

@@ -11,7 +11,7 @@ import {
   buildings,
   users,
 } from "./db/schema";
-import { parseBuilding } from "@/lib/parser/buddhashanti/parse-buildings";
+import { parseBuilding } from "@/lib/parser/Likhupike/parse-buildings";
 
 const getODKToken = async (
   siteUrl: string,
@@ -46,7 +46,7 @@ const getValueFromNestedField = (data: any, fieldPath: string): any => {
 
 const getPostgresInsertStatement = (formId: string, data: any) => {
   switch (formId) {
-    case "buddhashanti_building_survey":
+    case "Likhupike_building_survey":
       return parseBuilding(data);
   }
   return null;
@@ -54,14 +54,14 @@ const getPostgresInsertStatement = (formId: string, data: any) => {
 
 /**
  * Synchronizes data from staging to production tables based on the form type.
- * Currently supports the 'buddhashanti_building_survey' form type.
+ * Currently supports the 'Likhupike_building_survey' form type.
  *
  * @param formId - The identifier of the form type being synchronized
  * @param recordId - The unique identifier of the record being synchronized
  * @param data - The form data object containing survey information
  * @param ctx - The context object containing database connection and execution methods
  *
- * For buddhashanti_building_survey:
+ * For Likhupike_building_survey:
  * - Executes building-specific staging to production SQL statements
  * - Updates the user ID in buildings table by matching enumerator ID patterns
  * - Uses first 8 characters of IDs for matching users
@@ -74,7 +74,7 @@ const getPostgresInsertStatement = (formId: string, data: any) => {
  *
  * @example
  * await syncStagingToProduction(
- *   "buddhashanti_building_survey",
+ *   "Likhupike_building_survey",
  *   "record123",
  *   { enumerator_id: "USER123" },
  *   context
@@ -88,7 +88,7 @@ const syncStagingToProduction = async (
 ) => {
   try {
     switch (formId) {
-      case "buddhashanti_building_survey":
+      case "Likhupike_building_survey":
         const areaCode = getValueFromNestedField(data, "area_code");
         const buildingToken = getValueFromNestedField(data, "building_token");
 
@@ -176,7 +176,7 @@ const syncStagingToProduction = async (
         try {
           // First statement: Insert into buildings
           const insertStatement = sql.raw(`
-            INSERT INTO buddhashanti_buildings (
+            INSERT INTO Likhupike_buildings (
               id,
               survey_date,
               enumerator_name,
@@ -235,7 +235,7 @@ const syncStagingToProduction = async (
               time_to_health_organization,
               time_to_financial_organization,
               road_status
-            FROM staging_buddhashanti_buildings 
+            FROM staging_Likhupike_buildings 
             WHERE id = '${recordId.replace("uuid:", "")}'
             ON CONFLICT (id) DO NOTHING`);
           await ctx.db.execute(insertStatement);
@@ -302,7 +302,7 @@ const syncStagingToProduction = async (
           // Second statement: Insert into staging_to_production
           const trackingStatement = sql`
             INSERT INTO ${stagingToProduction} (staging_table, production_table, record_id)
-            VALUES ('staging_buddhashanti_buildings', 'buddhashanti_buildings', ${recordId})`;
+            VALUES ('staging_Likhupike_buildings', 'Likhupike_buildings', ${recordId})`;
           await ctx.db.execute(trackingStatement);
         } catch (error) {
           console.error(
@@ -339,7 +339,7 @@ const syncStagingToProduction = async (
 
 const performPostProcessing = async (formId: string, data: any, ctx: any) => {
   switch (formId) {
-    case "buddhashanti_building_survey":
+    case "Likhupike_building_survey":
   }
 };
 

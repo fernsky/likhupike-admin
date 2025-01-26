@@ -1,4 +1,4 @@
-import { RawBuildingData } from "../parser/buddhashanti/parse-buildings";
+import { RawBuildingData } from "../parser/Likhupike/parse-buildings";
 
 // Decode the single choice questions that are in the form
 // as like
