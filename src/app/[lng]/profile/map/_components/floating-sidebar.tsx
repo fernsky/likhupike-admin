@@ -2,7 +2,7 @@
 import React from "react";
 import { PanelRight } from "lucide-react";
 import useStore from "../../_store/app-store";
-import { useTranslation } from "@/app/[lng]/i18n/client";
+import { useTranslation } from "@/app/i18n/client";
 
 interface FloatingSidebarProps {
   lng: string;

@@ -2,7 +2,7 @@
 import React from "react";
 import Division from "./division";
 import { PanelRight } from "lucide-react";
-import { useTranslation } from "@/app/[lng]/i18n/client";
+import { useTranslation } from "@/app/i18n/client";
 import useStore from "../../_store/app-store";
 
 const sampleData = [

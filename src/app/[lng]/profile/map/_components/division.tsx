@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import SubDivision from "./sub-division";
 import Checkbox from "./checkbox";
 import { Minus, Plus } from "lucide-react";
-import { useTranslation } from "@/app/[lng]/i18n/client";
+import { useTranslation } from "@/app/i18n/client";
 import useStore from "../../_store/app-store";
 
 interface DivisionProps {

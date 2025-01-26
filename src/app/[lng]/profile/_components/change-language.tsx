@@ -2,7 +2,7 @@
 import React, { useState, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { languages } from "@/app/[lng]/i18n/settings";
+import { languages } from "@/app/i18n/settings";
 import { useClickAway } from "react-use";
 
 interface ChangeLanguageProps {

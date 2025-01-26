@@ -1,4 +1,4 @@
-import { useTranslation } from "@/app/[lng]/i18n";
+import { useTranslation } from "@/app/i18n";
 import Image from "next/image";
 import React from "react";
 import MountainImage from "../../../../../public/images/hero-mountain.png";
