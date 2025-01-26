@@ -99,6 +99,28 @@ export const userManagementRouter = createTRPCRouter({
       return { success: true };
     }),
 
+  delete: protectedProcedure
+    .input(z.string())
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Must be an admin to delete users",
+        });
+      }
+
+      if (ctx.user.id === input) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot delete your own account",
+        });
+      }
+
+      await ctx.db.delete(users).where(eq(users.id, input));
+
+      return { success: true };
+    }),
+
   getById: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {

@@ -26,6 +26,18 @@ import {
   Building,
   Clock,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 export default function UserDetailsPage({
   params,
@@ -36,6 +48,15 @@ export default function UserDetailsPage({
   const { data: enumerator, isLoading } = api.userManagement.getById.useQuery(
     params.id,
   );
+  const deleteUser = api.userManagement.delete.useMutation({
+    onSuccess: () => {
+      toast.success("User deleted successfully");
+      router.push("/users");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   if (isLoading) {
     return (
@@ -204,6 +225,29 @@ export default function UserDetailsPage({
           <Button onClick={() => router.push(`/users/${params.id}/edit`)}>
             Edit User
           </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">Delete User</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  user account and remove all associated data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteUser.mutate(params.id)}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       }
     >
