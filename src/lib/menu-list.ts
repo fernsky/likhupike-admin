@@ -10,6 +10,7 @@ import {
   ScanBarcode,
   User2Icon,
   User,
+  Users,
 } from "lucide-react";
 
 export type Role = "admin" | "superadmin" | "enumerator";
@@ -53,6 +54,12 @@ const menuConfig: Menu[] = [
     href: "/individual",
     label: "Individual",
     icon: User,
+    roles: ["admin"],
+  },
+ {
+    href: "/families",
+    label: "Families",
+    icon:Users,
     roles: ["admin"],
   },
 ];

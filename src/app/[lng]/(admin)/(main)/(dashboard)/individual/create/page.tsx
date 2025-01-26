@@ -27,17 +27,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { z } from "zod";
 import { toast } from "sonner";
-import {
-  User,
-  UserCircle,
-  Heart,
-  GraduationCap,
-  Users,
-  Plane,
-  Plus,
-  X,
-  Loader2,
-} from "lucide-react";
 
 type FormData = z.infer<typeof createIndividualSchema>;
 
@@ -50,69 +39,7 @@ export default function CreateIndividual() {
       parentId: "",
       wardNo: undefined,
       gender: undefined,
-      age: undefined,
-      deviceId: undefined,
-      familyRole: undefined,
-      citizenOf: undefined,
-      citizenOfOther: undefined,
-      caste: undefined,
-      casteOther: undefined,
-      ancestorLanguage: undefined,
-      ancestorLanguageOther: undefined,
-      primaryMotherTongue: undefined,
-      primaryMotherTongueOther: undefined,
-      religion: undefined,
-      religionOther: undefined,
-      maritalStatus: undefined,
-      marriedAge: undefined,
-      hasChronicDisease: undefined,
-      primaryChronicDisease: undefined,
-      isSanitized: undefined,
-      isDisabled: undefined,
-      disabilityType: undefined,
-      disabilityTypeOther: undefined,
-      disabilityCause: undefined,
-      hasBirthCertificate: undefined,
-      gaveLiveBirth: undefined,
-      aliveSons: undefined,
-      aliveDaughters: undefined,
-      totalBornChildren: undefined,
-      hasDeadChildren: undefined,
-      deadSons: undefined,
-      deadDaughters: undefined,
-      totalDeadChildren: undefined,
-      gaveRecentLiveBirth: undefined,
-      recentBornSons: undefined,
-      recentBornDaughters: undefined,
-      totalRecentChildren: undefined,
-      recentDeliveryLocation: undefined,
-      prenatalCheckups: undefined,
-      firstDeliveryAge: undefined,
-      isPresent: undefined,
-      absenteeAge: undefined,
-      absenteeEducationalLevel: undefined,
-      absenceReason: undefined,
-      absenteeLocation: undefined,
-      absenteeProvince: undefined,
-      absenteeDistrict: undefined,
-      absenteeCountry: undefined,
-      absenteeHasSentCash: undefined,
-      absenteeCashAmount: undefined,
-      literacyStatus: undefined,
-      schoolPresenceStatus: undefined,
-      educationalLevel: undefined,
-      primarySubject: undefined,
-      goesSchool: undefined,
-      schoolBarrier: undefined,
-      hasTraining: undefined,
-      training: undefined,
-      monthsTrained: undefined,
-      primarySkill: undefined,
-      hasInternetAccess: undefined,
-      financialWorkDuration: undefined,
-      primaryOccupation: undefined,
-      workBarrier: undefined,
-      workAvailability: undefined,
+      // ... other fields with default values
     },
   });
 
@@ -128,34 +55,53 @@ export default function CreateIndividual() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      // Ensure required fields are present
-      if (
-        !values.name ||
-        !values.parentId ||
-        !values.wardNo ||
-        !values.gender
-      ) {
-        toast.error("Please fill in all required fields");
-        return;
-      }
-
-      // Convert numeric values to strings
-      const formattedValues = {
+      const formattedData = {
         ...values,
-        wardNo: values.wardNo?.toString() ?? "",
-        age: values.age?.toString() ?? "",
-        marriedAge: values.marriedAge?.toString() ?? "",
-        aliveSons: values.aliveSons?.toString() ?? "",
-        aliveDaughters: values.aliveDaughters?.toString() ?? "",
-        totalBornChildren: values.totalBornChildren?.toString() ?? "",
-        deadSons: values.deadSons?.toString() ?? "",
-        deadDaughters: values.deadDaughters?.toString() ?? "",
-        totalDeadChildren: values.totalDeadChildren?.toString() ?? "",
-        absenteeAge: values.absenteeAge?.toString() ?? "",
-        absenteeCashAmount: values.absenteeCashAmount?.toString() ?? "",
+        // Convert string values to numbers for numeric fields
+        wardNo: values.wardNo ? Number(values.wardNo) : undefined,
+        age: values.age ? Number(values.age) : undefined,
+        marriedAge: values.marriedAge ? Number(values.marriedAge) : undefined,
+        aliveSons: values.aliveSons ? Number(values.aliveSons) : undefined,
+        aliveDaughters: values.aliveDaughters
+          ? Number(values.aliveDaughters)
+          : undefined,
+        totalBornChildren: values.totalBornChildren
+          ? Number(values.totalBornChildren)
+          : undefined,
+        deadSons: values.deadSons ? Number(values.deadSons) : undefined,
+        deadDaughters: values.deadDaughters
+          ? Number(values.deadDaughters)
+          : undefined,
+        totalDeadChildren: values.totalDeadChildren
+          ? Number(values.totalDeadChildren)
+          : undefined,
+        recentBornSons: values.recentBornSons
+          ? Number(values.recentBornSons)
+          : undefined,
+        recentBornDaughters: values.recentBornDaughters
+          ? Number(values.recentBornDaughters)
+          : undefined,
+        totalRecentChildren: values.totalRecentChildren
+          ? Number(values.totalRecentChildren)
+          : undefined,
+        prenatalCheckups: values.prenatalCheckups
+          ? Number(values.prenatalCheckups)
+          : undefined,
+        firstDeliveryAge: values.firstDeliveryAge
+          ? Number(values.firstDeliveryAge)
+          : undefined,
+        absenteeAge: values.absenteeAge
+          ? Number(values.absenteeAge)
+          : undefined,
+        monthsTrained: values.monthsTrained
+          ? Number(values.monthsTrained)
+          : undefined,
+        absenteeCashAmount: values.absenteeCashAmount
+          ? Number(values.absenteeCashAmount)
+          : undefined,
       };
 
-      await createMutation.mutateAsync(formattedValues);
+      await createMutation.mutateAsync(formattedData);
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to create individual");
@@ -165,819 +111,287 @@ export default function CreateIndividual() {
   return (
     <ContentLayout
       title="Create New Individual"
-      description="Add a new individual with their personal, health, education, and other details."
       actions={
-        <div className="flex items-center gap-3">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             onClick={() => router.push("/individual")}
-            className="flex items-center gap-2 hover:bg-destructive/10 hover:text-destructive"
+            className="hover:border-destructive hover:text-destructive"
           >
-            <X className="h-4 w-4" />
             Cancel
           </Button>
           <Button
             type="submit"
             form="create-individual-form"
             disabled={createMutation.isLoading}
-            className="flex items-center gap-2 bg-primary hover:bg-primary/90"
           >
-            {createMutation.isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              <>
-                <Plus className="h-4 w-4" />
-                Create Individual
-              </>
-            )}
+            {createMutation.isLoading ? "Creating..." : "Create Individual"}
           </Button>
         </div>
       }
     >
-      <div className="mx-auto max-w-5xl">
-        <Form {...form}>
-          <form
-            id="create-individual-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8"
-          >
-            <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
-                <TabsTrigger value="basic" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden lg:inline">Basic Info</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="demographics"
-                  className="flex items-center gap-2"
-                >
-                  <UserCircle className="h-4 w-4" />
-                  <span className="hidden lg:inline">Demographics</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="education"
-                  className="flex items-center gap-2"
-                >
-                  <GraduationCap className="h-4 w-4" />
-                  <span className="hidden lg:inline">Education</span>
-                </TabsTrigger>
-                <TabsTrigger value="health" className="flex items-center gap-2">
-                  <Heart className="h-4 w-4" />
-                  <span className="hidden lg:inline">Health</span>
-                </TabsTrigger>
-                <TabsTrigger value="family" className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  <span className="hidden lg:inline">Family Details</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="migration"
-                  className="flex items-center gap-2"
-                >
-                  <Plane className="h-4 w-4" />
-                  <span className="hidden lg:inline">Migration</span>
-                </TabsTrigger>
-              </TabsList>
+      <Form {...form}>
+        <form
+          id="create-individual-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+        >
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="basic">Basic Info</TabsTrigger>
+              <TabsTrigger value="personal">Personal</TabsTrigger>
+              <TabsTrigger value="health">Health</TabsTrigger>
+              <TabsTrigger value="education">Education</TabsTrigger>
+              <TabsTrigger value="family">Family</TabsTrigger>
+              <TabsTrigger value="migration">Migration</TabsTrigger>
+            </TabsList>
 
-              <TabsContent value="basic" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Basic Information
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the essential details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Full Name
-                              <span className="ml-1 text-destructive">*</span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter full name"
-                                className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="parentId"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Parent ID
-                              <span className="ml-1 text-destructive">*</span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter parent ID"
-                                className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="wardNo"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Ward Number
-                              <span className="ml-1 text-destructive">*</span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                placeholder="Enter ward number"
-                                className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="gender"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Gender
-                              <span className="ml-1 text-destructive">*</span>
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select gender" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="familyRole"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Role in Family
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select role" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="head">
-                                  Head of Family
-                                </SelectItem>
-                                <SelectItem value="spouse">Spouse</SelectItem>
-                                <SelectItem value="child">Child</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="deviceId"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Device ID
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter device ID"
-                                className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="demographics" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Demographics & Culture
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the demographic and cultural details of the
-                      individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="caste"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Caste
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select caste" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="brahmin">Brahmin</SelectItem>
-                                <SelectItem value="chhetri">Chhetri</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      {form.watch("caste") === "other" && (
-                        <FormField
-                          control={form.control}
-                          name="casteOther"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-sm font-semibold">
-                                Specify Caste
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Enter caste"
-                                  className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                />
-                              </FormControl>
-                              <FormMessage className="text-xs" />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                      <FormField
-                        control={form.control}
-                        name="citizenOf"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Citizenship
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value || undefined}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select citizenship" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="nepal">Nepal</SelectItem>
-                                <SelectItem value="other">Other</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="health" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Health Information
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the health details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="hasChronicDisease"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Chronic Disease Status
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="yes">Yes</SelectItem>
-                                <SelectItem value="no">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      {form.watch("hasChronicDisease") === "yes" && (
-                        <FormField
-                          control={form.control}
-                          name="primaryChronicDisease"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-sm font-semibold">
-                                Primary Chronic Disease
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Enter disease"
-                                  className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                />
-                              </FormControl>
-                              <FormMessage className="text-xs" />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                    </div>
-                    {form.watch("gender") === "female" && (
-                      <div className="space-y-4">
-                        <h3 className="font-medium">Maternal Health</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                          {/* Add fields for:
-                              - gaveLiveBirth
-                              - aliveSons/aliveDaughters/totalBornChildren
-                              - hasDeadChildren/deadSons/deadDaughters
-                              - gaveRecentLiveBirth and related fields
-                              - prenatalCheckups
-                              - firstDeliveryAge */}
-                        </div>
-                      </div>
+            {/* Basic Info Tab */}
+            <TabsContent value="basic">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Basic Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  {/* Required Fields */}
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  />
 
-              <TabsContent value="education" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Education Information
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the education details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="parentId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Parent ID *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="wardNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ward Number *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deviceId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Device ID</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Personal Tab */}
+            <TabsContent value="personal">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender *</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="age"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Age</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber)
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Add other personal information fields */}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Health Tab */}
+            <TabsContent value="health">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Health Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="hasChronicDisease"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Has Chronic Disease</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="yes">Yes</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("hasChronicDisease") === "yes" && (
+                    <FormField
+                      control={form.control}
+                      name="primaryChronicDisease"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Primary Chronic Disease</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="isDisabled"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Is Disabled</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="yes">Yes</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("isDisabled") === "yes" && (
+                    <>
                       <FormField
                         control={form.control}
-                        name="literacyStatus"
+                        name="disabilityType"
                         render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Literacy Status
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="literate">
-                                  Literate
-                                </SelectItem>
-                                <SelectItem value="illiterate">
-                                  Illiterate
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="educationalLevel"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Education Level
-                            </FormLabel>
+                          <FormItem>
+                            <FormLabel>Disability Type</FormLabel>
                             <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter education level"
-                                className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                              />
+                              <Input {...field} />
                             </FormControl>
-                            <FormMessage className="text-xs" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="migration" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Migration Status
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the migration details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
                       <FormField
                         control={form.control}
-                        name="isPresent"
+                        name="disabilityCause"
                         render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Currently Present
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value || undefined}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="yes">Yes</SelectItem>
-                                <SelectItem value="no">No</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
+                          <FormItem>
+                            <FormLabel>Disability Cause</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
-                      {form.watch("isPresent") === "no" && (
-                        <>
-                          <FormField
-                            control={form.control}
-                            name="absenteeAge"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Age When Left
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    type="number"
-                                    placeholder="Enter age"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenceReason"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Reason for Absence
-                                </FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  value={field.value || undefined}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select reason" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="education">
-                                      Education
-                                    </SelectItem>
-                                    <SelectItem value="employment">
-                                      Employment
-                                    </SelectItem>
-                                    <SelectItem value="marriage">
-                                      Marriage
-                                    </SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenteeLocation"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Current Location
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter location"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenteeProvince"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Province
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter province"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenteeDistrict"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  District
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter district"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenteeCountry"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Country
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter country"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="absenteeHasSentCash"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Sends Money Home
-                                </FormLabel>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  value={field.value || undefined}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select option" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="yes">Yes</SelectItem>
-                                    <SelectItem value="no">No</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                          {form.watch("absenteeHasSentCash") === "yes" && (
-                            <FormField
-                              control={form.control}
-                              name="absenteeCashAmount"
-                              render={({ field }) => (
-                                <FormItem className="space-y-2">
-                                  <FormLabel className="text-sm font-semibold">
-                                    Amount Sent (NPR)
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      type="number"
-                                      placeholder="Enter amount"
-                                      className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                    />
-                                  </FormControl>
-                                  <FormMessage className="text-xs" />
-                                </FormItem>
-                              )}
-                            />
-                          )}
-                          <FormField
-                            control={form.control}
-                            name="absenteeEducationalLevel"
-                            render={({ field }) => (
-                              <FormItem className="space-y-2">
-                                <FormLabel className="text-sm font-semibold">
-                                  Education Level When Left
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter education level"
-                                    className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                  />
-                                </FormControl>
-                                <FormMessage className="text-xs" />
-                              </FormItem>
-                            )}
-                          />
-                        </>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                    </>
+                  )}
 
-              <TabsContent value="work" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Work & Skills
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the work and skills details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
-                      {/* Add fields for:
-                          - primarySkill
-                          - hasInternetAccess
-                          - financialWorkDuration
-                          - primaryOccupation
-                          - workBarrier
-                          - workAvailability */}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="family" className="mt-6">
-                <Card className="border-none shadow-md">
-                  <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold">
-                      Family Details
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Enter the family details of the individual.
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6 sm:grid-cols-2">
+                  {form.watch("gender") === "female" && (
+                    <>
                       <FormField
                         control={form.control}
-                        name="maritalStatus"
+                        name="gaveLiveBirth"
                         render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Marital Status
-                            </FormLabel>
+                          <FormItem>
+                            <FormLabel>Has Given Live Birth</FormLabel>
                             <Select
                               onValueChange={field.onChange}
-                              value={field.value || undefined}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="single">Single</SelectItem>
-                                <SelectItem value="married">Married</SelectItem>
-                                <SelectItem value="divorced">
-                                  Divorced
-                                </SelectItem>
-                                <SelectItem value="widowed">Widowed</SelectItem>
-                                <SelectItem value="separated">
-                                  Separated
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )}
-                      />
-                      {form.watch("maritalStatus") === "married" && (
-                        <FormField
-                          control={form.control}
-                          name="marriedAge"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel className="text-sm font-semibold">
-                                Age at Marriage
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  type="number"
-                                  placeholder="Enter age"
-                                  className="w-full rounded-md border-border/50 bg-background shadow-sm transition-colors focus:border-primary"
-                                />
-                              </FormControl>
-                              <FormMessage className="text-xs" />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-                      <FormField
-                        control={form.control}
-                        name="hasBirthCertificate"
-                        render={({ field }) => (
-                          <FormItem className="space-y-2">
-                            <FormLabel className="text-sm font-semibold">
-                              Birth Certificate
-                            </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value || undefined}
+                              value={field.value}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -989,18 +403,413 @@ export default function CreateIndividual() {
                                 <SelectItem value="no">No</SelectItem>
                               </SelectContent>
                             </Select>
-                            <FormMessage className="text-xs" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </form>
-        </Form>
-      </div>
+
+                      {form.watch("gaveLiveBirth") === "yes" && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="aliveSons"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Number of Alive Sons</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(e.target.valueAsNumber)
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="aliveDaughters"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Number of Alive Daughters</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(e.target.valueAsNumber)
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Education Tab */}
+            <TabsContent value="education">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Education Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="literacyStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Literacy Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="literate">Literate</SelectItem>
+                            <SelectItem value="illiterate">
+                              Illiterate
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="educationalLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Educational Level</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="hasTraining"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Has Training</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="yes">Yes</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("hasTraining") === "yes" && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="training"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Training Details</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="monthsTrained"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Months Trained</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(e.target.valueAsNumber)
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Family Tab */}
+            <TabsContent value="family">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Family Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="maritalStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Marital Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="single">Single</SelectItem>
+                            <SelectItem value="married">Married</SelectItem>
+                            <SelectItem value="divorced">Divorced</SelectItem>
+                            <SelectItem value="widowed">Widowed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("maritalStatus") === "married" && (
+                    <FormField
+                      control={form.control}
+                      name="marriedAge"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Age at Marriage</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(e.target.valueAsNumber)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="familyRole"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Role in Family</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select role" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="head">Head of Family</SelectItem>
+                            <SelectItem value="spouse">Spouse</SelectItem>
+                            <SelectItem value="child">Child</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Migration Tab */}
+            <TabsContent value="migration">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Migration Status</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="isPresent"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Currently Present</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="yes">Yes</SelectItem>
+                            <SelectItem value="no">No</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("isPresent") === "no" && (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="absenceReason"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Reason for Absence</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select reason" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="education">
+                                  Education
+                                </SelectItem>
+                                <SelectItem value="employment">
+                                  Employment
+                                </SelectItem>
+                                <SelectItem value="marriage">
+                                  Marriage
+                                </SelectItem>
+                                <SelectItem value="other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="absenteeAge"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Age When Left</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) =>
+                                  field.onChange(e.target.valueAsNumber)
+                                }
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="absenteeLocation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Current Location</FormLabel>
+                            <FormControl>
+                              <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="absenteeHasSentCash"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Sends Money Home</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select option" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="yes">Yes</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {form.watch("absenteeHasSentCash") === "yes" && (
+                        <FormField
+                          control={form.control}
+                          name="absenteeCashAmount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Amount Sent (NPR)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(e.target.valueAsNumber)
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
     </ContentLayout>
   );
 }

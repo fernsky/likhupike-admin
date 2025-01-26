@@ -55,13 +55,7 @@ export default function IndividualDetails({
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
             </Button>
           </Link>
-          {individual?.familyId && (
-            <Link href={`/families/${individual.familyId}`}>
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                <Home className="mr-2 h-4 w-4" /> Back to Family
-              </Button>
-            </Link>
-          )}
+
           <Link href={`/individual/edit/${params.id}`}>
             <Button size="sm" className="w-full sm:w-auto">
               <Edit className="mr-2 h-4 w-4" /> Edit Profile
