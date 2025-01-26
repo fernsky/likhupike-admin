@@ -2,7 +2,7 @@ import { pgTable, text, integer } from "drizzle-orm/pg-core";
 
 const likhupikeIndividual = pgTable("likhupike_individual", {
   id: text("id").primaryKey().notNull(),
-  tenantId: text("tenant_id").default("khajura"),
+  tenantId: text("tenant_id").default("likhupike"),
   parentId: text("parent_id").notNull(),
   wardNo: integer("ward_no").notNull(),
   deviceId: text("device_id"),

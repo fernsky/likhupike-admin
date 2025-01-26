@@ -8,7 +8,7 @@ import { DataTable } from "@/components/shared/data-table/data-table";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import { Eye, Loader2 } from "lucide-react";
+import { Plus, Eye, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useMediaQuery } from "react-responsive";
 import { User } from "lucia";
@@ -84,7 +84,17 @@ export default function ListIndividuals({ user }: { user: User }) {
   ];
 
   return (
-    <ContentLayout title="Individuals">
+    <ContentLayout
+      title="Individuals"
+      actions={
+        <Link href="/individual/create">
+          <Button className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg transition-all hover:shadow-xl">
+            <Plus className="mr-2 h-4 w-4" />
+            Create New Individual
+          </Button>
+        </Link>
+      }
+    >
       <div className="mx-auto max-w-7xl space-y-6 p-4"></div>
       <div className="rounded-lg border bg-card shadow-sm">
         <div className="border-b p-4">
