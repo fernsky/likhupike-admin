@@ -5,16 +5,14 @@ import {
   varchar,
   pgEnum,
   integer,
-  json,
-  primaryKey,
-  boolean,
 } from "drizzle-orm/pg-core";
 import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import { geometry } from "../geographical";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
-export const rolesEnum = pgEnum("roles", ["enumerator", "supervisor", "admin"]);
+export const rolesEnum = pgEnum("roles", ["admin", "editor", "viewer"]);
+export const scopeEnum = pgEnum("scopes", ["ward", "municipality"]);
 
 export const users = pgTable(
   "users",
@@ -26,8 +24,9 @@ export const users = pgTable(
     phoneNumber: varchar("phone_number", { length: 10 }),
     email: varchar("email", { length: 255 }),
     avatar: varchar("avatar", { length: 255 }),
+    scope: scopeEnum("scope").default("ward"),
     wardNumber: integer("ward_number"),
-    role: rolesEnum("role").default("enumerator"),
+    role: rolesEnum("role").default("viewer"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(
       () => new Date(),
