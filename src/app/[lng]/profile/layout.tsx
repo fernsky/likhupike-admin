@@ -25,7 +25,12 @@ const RootLayout: React.FC<RootLayoutProps> = async ({ children, params }) => {
   const { lng } = await params;
   return (
     <html lang={lng} dir={dir(lng)}>
-      <head />
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </head>
       <body className={`${inter.className} antialiased`}>
         <AppStoreProvider>
           <Navbar lng={lng} />
