@@ -103,7 +103,7 @@ const Navbar: React.FC<NavbarProps> = ({ lng }) => {
                     <div className="p-2 rounded-lg border border-green-500/20 group-hover:border-green-500/40 transition-colors">
                       <item.icon className="w-4 h-4 text-green-600" />
                     </div>
-                    <span className="text-sm font-medium text-gray-600 group-hover:text-green-600 transition-colors">
+                    <span className="text-sm font-medium text-gray-600 group-hover:text-green-600 transition-colors tracking-tight">
                       {item.label}
                     </span>
                   </Link>
@@ -132,9 +132,9 @@ const Navbar: React.FC<NavbarProps> = ({ lng }) => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-green-100"
+              className="md:hidden border-t border-green-100 z-[500]"
             >
-              <div className="bg-gradient-to-b from-white to-green-50/30 px-4 pt-2 pb-3">
+              <div className="bg-gradient-to-b from-white to-green-50/30 px-4 pt-2 pb-3 z-[500]">
                 <div className="p-2 mb-3">
                   <Search />
                 </div>

@@ -14,11 +14,13 @@ const SidebarWrapper: React.FC<SidebarWrapperProps> = ({ lng }) => {
   return (
     <>
       {isMapSidebarOpen ? (
-        <div className="absolute top-0 left-0 z-[999] h-full bg-white">
+        <div className="fixed top-0 right-0 z-[400] h-screen max-h-screen">
           <Sidebar lng={lng} />
         </div>
       ) : (
-        <FloatingSidebar lng={lng} />
+        <div className="fixed top-[90px] right-5">
+          <FloatingSidebar lng={lng} />
+        </div>
       )}
     </>
   );

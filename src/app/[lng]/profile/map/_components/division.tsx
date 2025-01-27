@@ -1,8 +1,9 @@
 "use client";
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useMemo, useState } from "react";
 import SubDivision from "./sub-division";
 import Checkbox from "./checkbox";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/app/i18n/client";
 import useStore from "../../_store/app-store";
 
@@ -257,38 +258,57 @@ const Division: React.FC<DivisionProps> = ({
   ]);
 
   return (
-    <div
-      className={`pr-[8px] py-[12px] ${
-        !isLast ? "border-b-[#9E9E9E] border-b-[1px]" : ""
-      }`}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-[8px]">
-          <Checkbox onChange={handleCheckboxChange} checked={checked} />
-          <span className="text-[14px] font-[500]">{divisionName}</span>
+    <div className="border-b border-gray-100 last:border-none">
+      <div
+        className={`px-5 py-3.5 hover:bg-gradient-to-br hover:from-green-50/50 hover:to-transparent
+        transition-all duration-200 cursor-pointer select-none group`}
+        onClick={() => subDivisions && toggleExpanded()}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Checkbox onChange={handleCheckboxChange} checked={checked} />
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold tracking-tight text-gray-800  group-hover:text-gray-900">
+                {divisionName}
+              </span>
+              {subDivisions && (
+                <span className="text-xs text-gray-500 mt-0.5">
+                  {subDivisions.length} layers available
+                </span>
+              )}
+            </div>
+          </div>
+          {subDivisions && (
+            <motion.div
+              animate={{ rotate: expanded ? 90 : 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="p-1.5 rounded-full group-hover:bg-white/80"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-500" />
+            </motion.div>
+          )}
         </div>
-        {subDivisions && subDivisions?.length > 0 && (
-          <button onClick={toggleExpanded} className="">
-            {expanded ? (
-              <Minus className="text-[#505050] w-[20px] h-[20px]" />
-            ) : (
-              <Plus className="text-[#505050] w-[20px] h-[20px]" />
-            )}
-          </button>
-        )}
       </div>
-      {expanded && (
-        <div className="pl-[20px] py-[8px] pt-[16px] flex flex-col gap-0">
-          {subDivisions?.map((subDivision, index) => (
-            <SubDivision
-              subDivisionId={subDivision.subDivisionId}
-              key={subDivision.subDivisionId}
-              subDivisionName={t(subDivision.subDivisionId)}
-              isLast={index === subDivisions.length - 1}
-            />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {expanded && subDivisions && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="bg-gradient-to-r from-gray-50/80 to-transparent"
+          >
+            {subDivisions?.map((subDivision, index) => (
+              <SubDivision
+                subDivisionId={subDivision.subDivisionId}
+                key={subDivision.subDivisionId}
+                subDivisionName={t(subDivision.subDivisionId)}
+                isLast={index === subDivisions.length - 1}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

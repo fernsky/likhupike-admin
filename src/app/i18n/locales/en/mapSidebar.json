@@ -1,5 +1,8 @@
 {
   "layers": "Layers",
+  "toggleLayers": "Toggle Layers",
+  "searchLayers": "Search layers...",
+  "layersTooltip": "Click to show/hide map layers",
   "municipalityBoundaries": "Municipality Boundaries",
   "health": "Health",
   "municipalityOffices": "Municipality Offices",

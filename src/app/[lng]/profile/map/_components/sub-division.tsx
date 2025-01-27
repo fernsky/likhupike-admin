@@ -249,12 +249,17 @@ const SubDivision: React.FC<SubDivisionProps> = ({
 
   return (
     <div
-      className={`px-[8px] flex items-center gap-[6px] ${
-        !isLast ? "border-b-[#DADADA] border-b-[1px]" : ""
-      } py-[5px]`}
+      className={`px-5 py-2.5 flex items-center gap-4 group hover:bg-gradient-to-br 
+      hover:from-gray-50 hover:to-transparent transition-all duration-200
+      ${!isLast ? "border-b border-gray-100" : ""}`}
     >
       <Checkbox onChange={handleCheckboxChange} checked={checked} />
-      <span className="text-[14px]">{subDivisionName}</span>
+      <span
+        className="text-[13px] font-medium text-gray-600 group-hover:text-gray-900 
+      tracking-tight transition-colors"
+      >
+        {subDivisionName}
+      </span>
     </div>
   );
 };

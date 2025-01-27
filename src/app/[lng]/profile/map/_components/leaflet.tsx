@@ -63,7 +63,7 @@ const icons = {
   }),
   office: L.divIcon({
     html: `<svg width="24" height="24" viewBox="0 0 24 24" fill="#FFD700">
-      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2z"/>
+      <path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2z"/>
     </svg>`,
     className: "svg-icon",
     iconSize: [24, 24],
@@ -249,7 +249,7 @@ const Leaflet: React.FC = () => {
 
   return (
     <MapContainer
-      style={{ height: "100vh", width: "100%" }}
+      style={{ height: "100%", width: "100%" }}
       center={center}
       zoom={13}
       zoomControl={false}

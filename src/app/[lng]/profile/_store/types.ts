@@ -43,3 +43,9 @@ export type AppState = NavigationState &
 
 // Helper type for partial store initialization
 export type PartialAppState = Partial<AppState>;
+
+export interface LanguageParams {
+  params: {
+    lng: string;
+  };
+}

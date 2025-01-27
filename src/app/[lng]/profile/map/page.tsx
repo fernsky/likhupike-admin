@@ -7,7 +7,11 @@ interface MapPageProps {
 }
 
 const MapPage = ({ params }: MapPageProps) => {
-  return <MapClient params={params} />;
+  return (
+    <div className="h-[calc(100vh+64px)] w-full relative -mt-16">
+      <MapClient params={params} />
+    </div>
+  );
 };
 
 export default MapPage;

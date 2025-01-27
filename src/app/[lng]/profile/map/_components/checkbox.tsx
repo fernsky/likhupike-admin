@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface CheckboxProps {
   checked: boolean;
@@ -12,47 +14,30 @@ const Checkbox: React.FC<CheckboxProps> = ({
   onChange,
   className = "",
 }) => {
-  const toggleCheckbox = () => {
-    const newValue = !checked;
-    onChange?.(newValue);
-  };
-
   return (
-    <div
-      onClick={toggleCheckbox}
-      className={`cursor-pointer ${className}`}
+    <button
+      onClick={() => onChange?.(!checked)}
+      className={`relative w-5 h-5 rounded-md flex items-center justify-center 
+        transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500/20
+        ${
+          checked
+            ? "bg-gradient-to-br from-green-500 to-emerald-600 border-transparent"
+            : "border-2 border-gray-300 hover:border-green-500"
+        } ${className}`}
       role="checkbox"
       aria-checked={checked}
-      tabIndex={0}
     >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ padding: "2px" }}
+      <motion.div
+        initial={false}
+        animate={{
+          scale: checked ? 1 : 0,
+          opacity: checked ? 1 : 0,
+        }}
+        transition={{ duration: 0.2 }}
       >
-        <rect
-          width="20"
-          height="20"
-          rx="2"
-          fill={checked ? "#6E6E6E" : "none"}
-          stroke="#6E6E6E"
-          strokeWidth="2"
-          x="2"
-          y="2"
-        />
-        {checked && (
-          <path
-            d="M7 12L10.5 16L17 7"
-            stroke="white"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-        )}
-      </svg>
-    </div>
+        <Check className="w-3.5 h-3.5 text-white stroke-[3]" />
+      </motion.div>
+    </button>
   );
 };
 
