@@ -1,9 +1,9 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import React from "react";
+import { Languages } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { languages } from "@/app/i18n/settings";
-import { useClickAway } from "react-use";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ChangeLanguageProps {
   lng: string;
@@ -11,56 +11,44 @@ interface ChangeLanguageProps {
 
 const ChangeLanguage: React.FC<ChangeLanguageProps> = ({ lng }) => {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const changeLanguage = (newLng: string) => {
     const path = window.location.pathname;
     const segments = path.split("/").filter(Boolean);
-    if (segments.length > 0 && languages.includes(segments[0])) {
+    if (segments.length > 0 && ["en", "ne"].includes(segments[0])) {
       segments[0] = newLng;
     } else {
       segments.unshift(newLng);
     }
     const newPath = `/${segments.join("/")}`;
     router.push(newPath);
-    setIsOpen(false);
   };
 
-  useClickAway(dropdownRef, () => {
-    setIsOpen(false);
-  });
-
   return (
-    <div ref={dropdownRef} className="relative">
-      <div
-        className="flex gap-[4px] px-[8px] py-[4px] items-center drop-shadow-[0_0px_1px_rgba(0,0,0,0.1)] bg-[#FFFFFF] w-fit h-fit rounded-[12px] cursor-pointer"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className="text-xs text-[#616161]">
-          {lng == "en" ? "en" : "ने"}
-        </span>
-        <ChevronDown className="w-[16px] h-[16px] text-[#575757]" />
+    <div className="flex items-center gap-2">
+      <div className="p-2 rounded-lg border border-green-500/20">
+        <Languages className="w-4 h-4 text-green-600" />
       </div>
-      {isOpen && (
-        <ul
-          id={`navbar-${lng}`}
-          className="absolute z-[1000] top-[32px] left-[-0.05rem] rounded-[8px] border-[0.05rem] border-[#F5F5F5] w-[48px] bg-[#FFFFFF]"
-        >
-          <li
-            className="rounded-t-[8px] text-xs hover:bg-[#F6F6F6] px-[8px] py-[4px] cursor-pointer w-full border-b-[1px] border-b-[#D3D3D3]"
-            onClick={() => changeLanguage("en")}
+      <div className="flex items-center gap-1 p-1 rounded-lg border border-green-100">
+        {[
+          { code: "en", label: "EN" },
+          { code: "ne", label: "नेपाली" },
+        ].map((lang) => (
+          <motion.button
+            key={lang.code}
+            onClick={() => changeLanguage(lang.code)}
+            whileTap={{ scale: 0.97 }}
+            className={cn(
+              "px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200",
+              lng === lang.code
+                ? "bg-green-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-green-600 hover:bg-green-50",
+            )}
           >
-            en
-          </li>
-          <li
-            className="text-xs hover:bg-[#F6F6F6] px-[8px] py-[4px] cursor-pointer w-full rounded-b-[8px]"
-            onClick={() => changeLanguage("ne")}
-          >
-            ने
-          </li>
-        </ul>
-      )}
+            {lang.label}
+          </motion.button>
+        ))}
+      </div>
     </div>
   );
 };
