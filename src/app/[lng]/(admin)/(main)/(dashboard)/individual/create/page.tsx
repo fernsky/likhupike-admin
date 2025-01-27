@@ -55,53 +55,8 @@ export default function CreateIndividual() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      const formattedData = {
-        ...values,
-        // Convert string values to numbers for numeric fields
-        wardNo: values.wardNo ? Number(values.wardNo) : undefined,
-        age: values.age ? Number(values.age) : undefined,
-        marriedAge: values.marriedAge ? Number(values.marriedAge) : undefined,
-        aliveSons: values.aliveSons ? Number(values.aliveSons) : undefined,
-        aliveDaughters: values.aliveDaughters
-          ? Number(values.aliveDaughters)
-          : undefined,
-        totalBornChildren: values.totalBornChildren
-          ? Number(values.totalBornChildren)
-          : undefined,
-        deadSons: values.deadSons ? Number(values.deadSons) : undefined,
-        deadDaughters: values.deadDaughters
-          ? Number(values.deadDaughters)
-          : undefined,
-        totalDeadChildren: values.totalDeadChildren
-          ? Number(values.totalDeadChildren)
-          : undefined,
-        recentBornSons: values.recentBornSons
-          ? Number(values.recentBornSons)
-          : undefined,
-        recentBornDaughters: values.recentBornDaughters
-          ? Number(values.recentBornDaughters)
-          : undefined,
-        totalRecentChildren: values.totalRecentChildren
-          ? Number(values.totalRecentChildren)
-          : undefined,
-        prenatalCheckups: values.prenatalCheckups
-          ? Number(values.prenatalCheckups)
-          : undefined,
-        firstDeliveryAge: values.firstDeliveryAge
-          ? Number(values.firstDeliveryAge)
-          : undefined,
-        absenteeAge: values.absenteeAge
-          ? Number(values.absenteeAge)
-          : undefined,
-        monthsTrained: values.monthsTrained
-          ? Number(values.monthsTrained)
-          : undefined,
-        absenteeCashAmount: values.absenteeCashAmount
-          ? Number(values.absenteeCashAmount)
-          : undefined,
-      };
-
-      await createMutation.mutateAsync(formattedData);
+      //@ts-ignore
+      await createMutation.mutateAsync(values);
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to create individual");
@@ -193,7 +148,7 @@ export default function CreateIndividual() {
                             type="number"
                             {...field}
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(parseInt(e.target.value, 10))
                             }
                           />
                         </FormControl>
@@ -263,7 +218,7 @@ export default function CreateIndividual() {
                             type="number"
                             {...field}
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(parseInt(e.target.value, 10))
                             }
                           />
                         </FormControl>
@@ -421,7 +376,9 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(e.target.valueAsNumber)
+                                      field.onChange(
+                                        parseInt(e.target.value, 10),
+                                      )
                                     }
                                   />
                                 </FormControl>
@@ -440,7 +397,9 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(e.target.valueAsNumber)
+                                      field.onChange(
+                                        parseInt(e.target.value, 10),
+                                      )
                                     }
                                   />
                                 </FormControl>
@@ -555,7 +514,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(e.target.valueAsNumber)
+                                  field.onChange(parseInt(e.target.value, 10))
                                 }
                               />
                             </FormControl>
@@ -615,7 +574,7 @@ export default function CreateIndividual() {
                               type="number"
                               {...field}
                               onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
+                                field.onChange(parseInt(e.target.value, 10))
                               }
                             />
                           </FormControl>
@@ -733,7 +692,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(e.target.valueAsNumber)
+                                  field.onChange(parseInt(e.target.value, 10))
                                 }
                               />
                             </FormControl>
@@ -793,7 +752,7 @@ export default function CreateIndividual() {
                                   type="number"
                                   {...field}
                                   onChange={(e) =>
-                                    field.onChange(e.target.valueAsNumber)
+                                    field.onChange(parseInt(e.target.value, 10))
                                   }
                                 />
                               </FormControl>
