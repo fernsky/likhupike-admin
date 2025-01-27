@@ -6,11 +6,14 @@ const config = {
   ignoreBuildErrors: true,
   images: {
     domains: ["storage.digprofile.com"],
+    //domains: ["localhost"],
     remotePatterns: [
       {
         protocol: "http",
         hostname: "storage.digprofile.com",
+        //hostname: "localhost",
         port: "50000",
+        // port: "9000",
         pathname: "/**",
       },
     ],
