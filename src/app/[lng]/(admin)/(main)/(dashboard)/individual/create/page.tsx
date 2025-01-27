@@ -74,16 +74,6 @@ export default function CreateIndividual() {
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            form="create-individual-form"
-            onClick={async () => {
-              await onSubmit(form.getValues());
-            }}
-            disabled={createMutation.isLoading}
-          >
-            {createMutation.isLoading ? "Creating..." : "Create Individual"}
-          </Button>
         </div>
       }
     >
@@ -220,7 +210,7 @@ export default function CreateIndividual() {
                             type="number"
                             {...field}
                             onChange={(e) =>
-                              field.onChange(parseInt(e.target.value, 10))
+                              field.onChange(e.target.valueAsNumber)
                             }
                           />
                         </FormControl>
@@ -378,9 +368,7 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(
-                                        parseInt(e.target.value, 10),
-                                      )
+                                      field.onChange(e.target.valueAsNumber)
                                     }
                                   />
                                 </FormControl>
@@ -399,9 +387,7 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(
-                                        parseInt(e.target.value, 10),
-                                      )
+                                      field.onChange(e.target.valueAsNumber)
                                     }
                                   />
                                 </FormControl>
@@ -516,7 +502,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value, 10))
+                                  field.onChange(e.target.valueAsNumber)
                                 }
                               />
                             </FormControl>
@@ -576,7 +562,7 @@ export default function CreateIndividual() {
                               type="number"
                               {...field}
                               onChange={(e) =>
-                                field.onChange(parseInt(e.target.value, 10))
+                                field.onChange(e.target.valueAsNumber)
                               }
                             />
                           </FormControl>
@@ -694,7 +680,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value, 10))
+                                  field.onChange(e.target.valueAsNumber)
                                 }
                               />
                             </FormControl>
@@ -754,7 +740,7 @@ export default function CreateIndividual() {
                                   type="number"
                                   {...field}
                                   onChange={(e) =>
-                                    field.onChange(parseInt(e.target.value, 10))
+                                    field.onChange(e.target.valueAsNumber)
                                   }
                                 />
                               </FormControl>
@@ -769,6 +755,17 @@ export default function CreateIndividual() {
               </Card>
             </TabsContent>
           </Tabs>
+          <Button
+            type="submit"
+            form="create-individual-form"
+            onClick={form.handleSubmit(onSubmit)}
+            // onClick={async () => {
+            //   await onSubmit(form.getValues());
+            // }}
+            disabled={createMutation.isLoading}
+          >
+            {createMutation.isLoading ? "Creating..." : "Create Individual"}
+          </Button>
         </form>
       </Form>
     </ContentLayout>

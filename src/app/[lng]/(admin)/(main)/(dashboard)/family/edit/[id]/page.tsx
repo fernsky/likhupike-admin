@@ -8,7 +8,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -17,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { updateIndividualSchema } from "@/server/api/routers/individual/individual.schema";
+import { updateFamilySchema } from "@/server/api/routers/family/family.schema";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -29,18 +28,18 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 
-export default function EditIndividual({ params }: { params: { id: string } }) {
+export default function EditFamily({ params }: { params: { id: string } }) {
   const router = useRouter();
   const decodedId = decodeURIComponent(params.id);
 
-  const { data: individual, isLoading } = api.individual.getById.useQuery({
+  const { data: family, isLoading } = api.family.getById.useQuery({
     id: decodedId,
   });
 
-  const updateMutation = api.individual.updateIndividual.useMutation({
+  const updateMutation = api.family.updateFamily.useMutation({
     onSuccess: () => {
-      toast.success("Individual updated successfully");
-      router.push(`/individual/${decodedId}`);
+      toast.success("Family updated successfully");
+      router.push(`/family/${decodedId}`);
     },
     onError: (error) => {
       toast.error(error.message);
@@ -48,32 +47,38 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
   });
 
   const form = useForm({
-    resolver: zodResolver(updateIndividualSchema),
+    resolver: zodResolver(updateFamilySchema),
     defaultValues: {
       id: decodedId,
-      name: individual?.name ?? "",
-      parentId: individual?.parentId ?? "",
-      wardNo: individual?.wardNo,
-      gender: individual?.gender ?? "",
-      age: individual?.age ?? undefined,
-      deviceId: individual?.deviceId ?? "",
-      citizenOf: individual?.citizenOf ?? "",
-      hasChronicDisease: individual?.hasChronicDisease?.toString() ?? "",
-      primaryChronicDisease: individual?.primaryChronicDisease ?? "",
-      isDisabled: individual?.isDisabled?.toString() ?? "",
-      disabilityType: individual?.disabilityType ?? "",
-      literacyStatus: individual?.literacyStatus ?? "",
-      educationalLevel: individual?.educationalLevel ?? "",
-      hasTraining: individual?.hasTraining?.toString() ?? "",
-      primarySkill: individual?.primarySkill ?? "",
-      maritalStatus: individual?.maritalStatus ?? "",
-      marriedAge: individual?.marriedAge ?? undefined,
-      totalBornChildren: individual?.totalBornChildren ?? undefined,
-      familyRole: individual?.familyRole ?? "",
-      isPresent: individual?.isPresent?.toString() ?? "",
-      absenceReason: individual?.absenceReason ?? "",
-      absenteeLocation: individual?.absenteeLocation ?? "",
-      absenteeHasSentCash: individual?.absenteeHasSentCash?.toString() ?? "",
+      wardNo: family?.wardNo,
+      areaCode: family?.areaCode ?? "",
+      houseTokenNumber: family?.houseTokenNumber ?? "",
+      familySymbolNo: family?.familySymbolNo ?? "",
+      locality: family?.locality ?? "",
+      devOrg: family?.devOrg ?? "",
+      location: family?.location ?? "",
+      altitude: family?.altitude ?? undefined,
+      gpsAccuracy: family?.gpsAccuracy ?? undefined,
+      headName: family?.headName ?? "",
+      headPhone: family?.headPhone ?? "",
+      totalMembers: family?.totalMembers ?? undefined,
+      isSanitized: family?.isSanitized ?? false,
+      houseOwnership: family?.houseOwnership ?? "",
+      feels_safe: family?.feels_safe ?? "",
+      waterSource: family?.waterSource ?? [],
+      toiletType: family?.toiletType ?? "",
+      solidWaste: family?.solidWaste ?? "",
+      primaryCookingFuel: family?.primaryCookingFuel ?? "",
+      primaryEnergySource: family?.primaryEnergySource ?? "",
+      facilities: family?.facilities ?? [],
+      femaleProperties: family?.femaleProperties ?? "",
+      loanedOrganizations: family?.loanedOrganizations ?? [],
+      hasBank: family?.hasBank ?? "",
+      hasInsurance: family?.hasInsurance ?? "",
+      healthOrg: family?.healthOrg ?? "",
+      incomeSources: family?.incomeSources ?? [],
+      hasRemittance: family?.hasRemittance ?? false,
+      remittanceExpenses: family?.remittanceExpenses ?? [],
     },
   });
 
@@ -91,7 +96,7 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
   return (
     <ContentLayout
-      title="Edit Individual"
+      title="Edit Family"
       subtitle={`ID: ${decodedId}`}
       actions={
         <div className="flex gap-2">
@@ -104,7 +109,7 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
           </Button>
           <Button
             type="submit"
-            form="individual-form"
+            form="family-form"
             className="bg-primary hover:bg-primary/90"
             disabled={updateMutation.isLoading}
           >
@@ -115,54 +120,25 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
     >
       <Form {...form}>
         <form
-          id="individual-form"
+          id="family-form"
           onSubmit={form.handleSubmit((data) => updateMutation.mutate(data))}
           className="space-y-6"
         >
-          <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+          <Tabs defaultValue="location" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="location">Location</TabsTrigger>
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
-              <TabsTrigger value="personal">Personal</TabsTrigger>
-              <TabsTrigger value="health">Health</TabsTrigger>
-              <TabsTrigger value="education">Education</TabsTrigger>
-              <TabsTrigger value="family">Family</TabsTrigger>
-              <TabsTrigger value="migration">Migration</TabsTrigger>
+              <TabsTrigger value="house">House Details</TabsTrigger>
+              <TabsTrigger value="facilities">Facilities</TabsTrigger>
+              <TabsTrigger value="economic">Economic</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="basic">
+            <TabsContent value="location">
               <Card>
                 <CardHeader>
-                  <CardTitle>Basic Information</CardTitle>
+                  <CardTitle>Location Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="parentId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Parent ID</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <FormField
                     control={form.control}
                     name="wardNo"
@@ -185,10 +161,38 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="deviceId"
+                    name="areaCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Device ID</FormLabel>
+                        <FormLabel>Area Code</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="locality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Locality</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -200,18 +204,46 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="personal">
+            <TabsContent value="basic">
               <Card>
                 <CardHeader>
-                  <CardTitle>Personal Information</CardTitle>
+                  <CardTitle>Basic Information</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="age"
+                    name="headName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Age</FormLabel>
+                        <FormLabel>Head Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="headPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Head Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="totalMembers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Total Members</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -228,59 +260,46 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="citizenOf"
+                    name="isSanitized"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Citizenship</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
+                        <FormLabel>Is Sanitized</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(value === "true")
+                          }
+                          defaultValue={field.value ? "true" : "false"}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="true">Yes</SelectItem>
+                            <SelectItem value="false">No</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  {/* Add other personal fields */}
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="health">
+            <TabsContent value="house">
               <Card>
                 <CardHeader>
-                  <CardTitle>Health Information</CardTitle>
+                  <CardTitle>House Details</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="hasChronicDisease"
+                    name="houseOwnership"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Has Chronic Disease</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select option" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="primaryChronicDisease"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primary Chronic Disease</FormLabel>
+                        <FormLabel>House Ownership</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -291,24 +310,13 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="isDisabled"
+                    name="feels_safe"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Is Disabled</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select option" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Feels Safe</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -316,10 +324,24 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="disabilityType"
+                    name="toiletType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Disability Type</FormLabel>
+                        <FormLabel>Toilet Type</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="solidWaste"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Solid Waste</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -331,18 +353,18 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="education">
+            <TabsContent value="facilities">
               <Card>
                 <CardHeader>
-                  <CardTitle>Education Information</CardTitle>
+                  <CardTitle>Facilities Information</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="literacyStatus"
+                    name="primaryCookingFuel"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Literacy Status</FormLabel>
+                        <FormLabel>Primary Cooking Fuel</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -353,49 +375,10 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="educationalLevel"
+                    name="primaryEnergySource"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Educational Level</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="hasTraining"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Has Training</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select option" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="primarySkill"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primary Skill</FormLabel>
+                        <FormLabel>Primary Energy Source</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -407,18 +390,18 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
               </Card>
             </TabsContent>
 
-            <TabsContent value="family">
+            <TabsContent value="economic">
               <Card>
                 <CardHeader>
-                  <CardTitle>Family Information</CardTitle>
+                  <CardTitle>Economic Information</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="maritalStatus"
+                    name="femaleProperties"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Marital Status</FormLabel>
+                        <FormLabel>Female Properties</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -429,50 +412,10 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
 
                   <FormField
                     control={form.control}
-                    name="marriedAge"
+                    name="hasBank"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Age at Marriage</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseInt(e.target.value, 10) || "")
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="totalBornChildren"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Born Children</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(parseInt(e.target.value, 10) || "")
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="familyRole"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Family Role</FormLabel>
+                        <FormLabel>Has Bank Account</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -480,25 +423,32 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
                       </FormItem>
                     )}
                   />
-                </CardContent>
-              </Card>
-            </TabsContent>
 
-            <TabsContent value="migration">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Migration Information</CardTitle>
-                </CardHeader>
-                <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="isPresent"
+                    name="hasInsurance"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Currently Present</FormLabel>
+                        <FormLabel>Has Insurance</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="hasRemittance"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Has Remittance</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          onValueChange={(value) =>
+                            field.onChange(value === "true")
+                          }
+                          defaultValue={field.value ? "true" : "false"}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -506,61 +456,8 @@ export default function EditIndividual({ params }: { params: { id: string } }) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="absenceReason"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Reason for Absence</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="absenteeLocation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Current Location</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="absenteeHasSentCash"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Has Sent Remittance</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select option" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="yes">Yes</SelectItem>
-                            <SelectItem value="no">No</SelectItem>
+                            <SelectItem value="true">Yes</SelectItem>
+                            <SelectItem value="false">No</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

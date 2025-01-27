@@ -9,3 +9,69 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 import { geometry } from "../geographical";
+import {users, wards } from "./basic";
+
+export const likhupikeFamily = pgTable("likhupike_family", {
+  id: text("id").primaryKey().notNull(),
+
+  // Location Details
+  wardNo: integer("ward_no").notNull(),
+  areaCode: text("area_code"),
+  houseTokenNumber: text("house_token_number"),
+  familySymbolNo: text("family_symbol_no"),
+  locality: text("locality"),
+  devOrg: text("dev_org"),
+  location: text("location"),
+  gps: geometry("gps", { type: "Point" }),
+  altitude: decimal("altitude"),
+  gpsAccuracy: decimal("gps_accuracy"),
+
+  // Family Details
+  headName: text("head_name"),
+  headPhone: text("head_phone"),
+  totalMembers: integer("total_members"),
+  isSanitized: boolean("is_sanitized"),
+
+  // Media (audio & images stored as bucket keys)
+  surveyAudioRecording: varchar("survey_audio_recording", { length: 255 }),
+  familyImage: varchar("family_image", { length: 255 }),
+  enumeratorSelfie: varchar("enumerator_selfie", { length: 255 }),
+
+  // House Details
+  houseOwnership: text("house_ownership"),
+  houseOwnershipOther: text("house_ownership_other"),
+  feels_safe: text("feels_safe"),
+  waterSource: text("water_source").array(),
+  waterSourceOther: text("water_source_other"),
+  waterPurificationMethods: text("water_purification_methods").array(),
+  toiletType: text("toilet_type"),
+  solidWaste: text("solid_waste"),
+  solidWasteOther: text("solid_waste_other"),
+
+  // Energy and Facilities
+  primaryCookingFuel: text("primary_cooking_fuel"),
+  primaryEnergySource: text("primary_energy_source"),
+  primaryEnergySourceOther: text("primary_energy_source_other"),
+  facilities: text("facilities").array(),
+
+  // Economic Details
+  femaleProperties: text("female_properties"),
+  loanedOrganizations: text("loaned_organizations").array(),
+  loanUse: text("loan_use"),
+  hasBank: text("has_bank"),
+  hasInsurance: text("has_insurance"),
+  healthOrg: text("health_org"),
+  healthOrgOther: text("health_org_other"),
+  incomeSources: text("income_sources").array(),
+  municipalSuggestions: text("municipal_suggestions"),
+  municipalSuggestionsOther: text("municipal_suggestions_other"),
+
+  // Additional Data
+  hasRemittance: boolean("has_remittance"),
+  remittanceExpenses: text("remittance_expenses").array(),
+  
+});
+
+
+export default likhupikeFamily;
+
