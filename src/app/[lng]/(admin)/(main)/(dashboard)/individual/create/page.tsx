@@ -55,7 +55,6 @@ export default function CreateIndividual() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      //@ts-ignore
       await createMutation.mutateAsync(values);
     } catch (error) {
       console.error("Form submission error:", error);
@@ -78,6 +77,9 @@ export default function CreateIndividual() {
           <Button
             type="submit"
             form="create-individual-form"
+            onClick={async () => {
+              await onSubmit(form.getValues());
+            }}
             disabled={createMutation.isLoading}
           >
             {createMutation.isLoading ? "Creating..." : "Create Individual"}
