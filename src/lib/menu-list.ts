@@ -57,7 +57,7 @@ const menuConfig: Menu[] = [
     roles: ["admin"],
   },
  {
-    href: "/families",
+    href: "/family",
     label: "Families",
     icon:Users,
     roles: ["admin"],

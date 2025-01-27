@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const createIndividualSchema = z.object({
   parentId: z.string().min(1, "Parent ID is required"),
-  wardNo: z.number(),
+  wardNo: z.number().optional(),
   deviceId: z.string().optional(),
   name: z.string().min(1, "Name is required"),
   gender: z.string().min(1, "Gender is required"),
-  age: z.number(),
+  age: z.number().optional(),
   familyRole: z.string().optional(),
   citizenOf: z.string().optional(),
   citizenOfOther: z.string().optional(),
