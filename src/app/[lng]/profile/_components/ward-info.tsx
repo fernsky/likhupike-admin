@@ -11,7 +11,7 @@ import {
   Baby,
   Building2,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface StatCardProps {
@@ -27,20 +27,20 @@ const StatCard: React.FC<StatCardProps> = ({
   icon: Icon,
   trend,
 }) => (
-  <div className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all">
+  <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl shadow-sm hover:shadow-md transition-all group">
     <div className="flex items-center justify-between">
       <div className="space-y-1">
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-bold">{value}</p>
+        <p className="text-sm text-gray-600">{label}</p>
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
       </div>
-      <div className="p-2 bg-primary/10 rounded-lg">
-        <Icon className="w-5 h-5 text-primary" />
+      <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white group-hover:scale-105 transition-transform">
+        <Icon className="w-5 h-5" />
       </div>
     </div>
     {trend && (
       <div className="mt-2 flex items-center gap-1">
-        <TrendingUp className="w-4 h-4 text-green-500" />
-        <span className="text-sm text-green-600">{trend}</span>
+        <TrendingUp className="w-4 h-4 text-green-600" />
+        <span className="text-sm text-green-700">{trend}</span>
       </div>
     )}
   </div>
@@ -141,124 +141,331 @@ const WardInfo = () => {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white to-green-50/30">
-      <div className="container mx-auto px-4">
+    <section className="py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-b from-green-50/50 to-white/80" />
+      <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-white to-transparent" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Enhanced Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           <Badge variant="outline" className="mb-4">
+            <MapPin className="w-4 h-4 mr-1" />
             Administrative Divisions
           </Badge>
           <h2 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
             Ward Information
           </h2>
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
             Explore detailed demographic and development indicators for each
             ward
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {wards.map((ward, index) => (
+        {/* Enhanced Grid Layout with Center Alignment */}
+        <div className="flex flex-col items-center">
+          {/* First Row - 2 Wards */}
+          <div className="grid lg:grid-cols-2 gap-8 w-full max-w-5xl">
+            {wards.slice(0, 2).map((ward, index) => (
+              <motion.div
+                key={ward.number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group"
+              >
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                  <div className="relative h-full">
+                    {/* Gradient background */}
+                    <div
+                      className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${ward.color} opacity-10 group-hover:opacity-15 transition-opacity`}
+                    />
+
+                    <CardContent className="relative p-6">
+                      <div className="flex flex-col gap-6">
+                        {/* Enhanced Header */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`p-3 w-fit rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white group-hover:scale-105 transition-transform`}
+                            >
+                              <Home className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-900">
+                                Ward {ward.number}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                Area: {ward.area} km²
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="font-medium">
+                            Zone {ward.number}
+                          </Badge>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <StatCard
+                            label="Population"
+                            value={ward.population}
+                            icon={Users}
+                            trend={`${ward.growthRate}% growth`}
+                          />
+                          <StatCard
+                            label="Households"
+                            value={ward.households}
+                            icon={Home}
+                            trend={`${ward.avgFamilySize} avg. size`}
+                          />
+                        </div>
+
+                        {/* Indicators Grid */}
+                        <div className="space-y-4">
+                          <h4 className="font-semibold text-gray-900">
+                            Key Indicators
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(ward.indicators).map(
+                              ([key, value]) => (
+                                <div
+                                  key={key}
+                                  className="bg-gray-50/50 rounded-lg p-3 hover:bg-gray-50/80 transition-colors"
+                                >
+                                  <p className="text-sm text-gray-500 mb-1">
+                                    {key}
+                                  </p>
+                                  <p className="font-medium text-gray-900">
+                                    {value}
+                                  </p>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-4 mt-2 border-t">
+                          <div className="flex items-center gap-2">
+                            <GridIcon className="w-4 h-4 text-green-600" />
+                            <span className="text-sm text-gray-600">
+                              Density: {ward.density}/km²
+                            </span>
+                          </div>
+                          <button className="text-sm font-medium text-green-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                            View Details
+                            <ArrowUpRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Middle Row - 2 Wards */}
+          <div className="grid lg:grid-cols-2 gap-8 w-full max-w-5xl mt-8">
+            {wards.slice(2, 4).map((ward, index) => (
+              <motion.div
+                key={ward.number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: (index + 2) * 0.1 }}
+                className="group"
+              >
+                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
+                  <div className="relative h-full">
+                    {/* Gradient background */}
+                    <div
+                      className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${ward.color} opacity-10 group-hover:opacity-15 transition-opacity`}
+                    />
+
+                    <CardContent className="relative p-6">
+                      <div className="flex flex-col gap-6">
+                        {/* Enhanced Header */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`p-3 w-fit rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white group-hover:scale-105 transition-transform`}
+                            >
+                              <Home className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-gray-900">
+                                Ward {ward.number}
+                              </h3>
+                              <p className="text-sm text-gray-500">
+                                Area: {ward.area} km²
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant="outline" className="font-medium">
+                            Zone {ward.number}
+                          </Badge>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <StatCard
+                            label="Population"
+                            value={ward.population}
+                            icon={Users}
+                            trend={`${ward.growthRate}% growth`}
+                          />
+                          <StatCard
+                            label="Households"
+                            value={ward.households}
+                            icon={Home}
+                            trend={`${ward.avgFamilySize} avg. size`}
+                          />
+                        </div>
+
+                        {/* Indicators Grid */}
+                        <div className="space-y-4">
+                          <h4 className="font-semibold text-gray-900">
+                            Key Indicators
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            {Object.entries(ward.indicators).map(
+                              ([key, value]) => (
+                                <div
+                                  key={key}
+                                  className="bg-gray-50/50 rounded-lg p-3 hover:bg-gray-50/80 transition-colors"
+                                >
+                                  <p className="text-sm text-gray-500 mb-1">
+                                    {key}
+                                  </p>
+                                  <p className="font-medium text-gray-900">
+                                    {value}
+                                  </p>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-4 mt-2 border-t">
+                          <div className="flex items-center gap-2">
+                            <GridIcon className="w-4 h-4 text-green-600" />
+                            <span className="text-sm text-gray-600">
+                              Density: {ward.density}/km²
+                            </span>
+                          </div>
+                          <button className="text-sm font-medium text-green-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                            View Details
+                            <ArrowUpRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Last Row - Single Ward Centered */}
+          <div className="w-full max-w-5xl mt-8 flex justify-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              key={ward.number}
-              className="group"
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="group w-full lg:w-1/2"
             >
               <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div className="relative">
-                  {/* Enhanced gradient header */}
+                <div className="relative h-full">
+                  {/* Gradient background */}
                   <div
-                    className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${ward.color} opacity-10`}
+                    className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${wards[4].color} opacity-10 group-hover:opacity-15 transition-opacity`}
                   />
 
-                  {/* Main content with relative positioning */}
-                  <div className="relative p-6">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="space-y-1">
+                  <CardContent className="relative p-6">
+                    <div className="flex flex-col gap-6">
+                      {/* Enhanced Header */}
+                      <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <span
-                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br ${ward.color} text-white font-semibold`}
+                          <div
+                            className={`p-3 w-fit rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white group-hover:scale-105 transition-transform`}
                           >
-                            {ward.number}
-                          </span>
-                          <h3 className="text-2xl font-bold text-gray-900">
-                            Ward {ward.number}
-                          </h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Area: {ward.area} km²
-                        </p>
-                      </div>
-                      <Badge variant="outline" className="font-medium">
-                        <MapPin className="w-4 h-4 mr-1" />
-                        Zone {ward.number}
-                      </Badge>
-                    </div>
-
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                      <StatCard
-                        label="Population"
-                        value={ward.population}
-                        icon={Users}
-                        trend={`${ward.growthRate}% growth`}
-                      />
-                      <StatCard
-                        label="Households"
-                        value={ward.households}
-                        icon={Home}
-                        trend={`${ward.avgFamilySize} avg. size`}
-                      />
-                    </div>
-
-                    {/* Indicators */}
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-gray-900">
-                        Key Indicators
-                      </h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        {Object.entries(ward.indicators).map(([key, value]) => (
-                          <div key={key} className="flex items-center gap-2">
-                            {key === "households" && (
-                              <Home className="w-4 h-4 text-primary" />
-                            )}
-                            {key === "education" && (
-                              <GraduationCap className="w-4 h-4 text-primary" />
-                            )}
-                            {key === "health" && (
-                              <Baby className="w-4 h-4 text-primary" />
-                            )}
-                            {key === "infrastructure" && (
-                              <Building2 className="w-4 h-4 text-primary" />
-                            )}
-                            <span className="text-sm text-gray-600">
-                              {value}
-                            </span>
+                            <Home className="w-5 h-5" />
                           </div>
-                        ))}
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">
+                              Ward {wards[4].number}
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              Area: {wards[4].area} km²
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="font-medium">
+                          Zone {wards[4].number}
+                        </Badge>
                       </div>
-                    </div>
 
-                    {/* Action Footer */}
-                    <div className="mt-6 pt-4 border-t flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <GridIcon className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-gray-500">
-                          Density: {ward.density}/km²
-                        </span>
+                      {/* Stats Grid */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <StatCard
+                          label="Population"
+                          value={wards[4].population}
+                          icon={Users}
+                          trend={`${wards[4].growthRate}% growth`}
+                        />
+                        <StatCard
+                          label="Households"
+                          value={wards[4].households}
+                          icon={Home}
+                          trend={`${wards[4].avgFamilySize} avg. size`}
+                        />
                       </div>
-                      <button className="text-sm font-medium text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
-                        View Details
-                        <ArrowUpRight className="w-4 h-4" />
-                      </button>
+
+                      {/* Indicators Grid */}
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-gray-900">
+                          Key Indicators
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          {Object.entries(wards[4].indicators).map(
+                            ([key, value]) => (
+                              <div
+                                key={key}
+                                className="bg-gray-50/50 rounded-lg p-3 hover:bg-gray-50/80 transition-colors"
+                              >
+                                <p className="text-sm text-gray-500 mb-1">
+                                  {key}
+                                </p>
+                                <p className="font-medium text-gray-900">
+                                  {value}
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pt-4 mt-2 border-t">
+                        <div className="flex items-center gap-2">
+                          <GridIcon className="w-4 h-4 text-green-600" />
+                          <span className="text-sm text-gray-600">
+                            Density: {wards[4].density}/km²
+                          </span>
+                        </div>
+                        <button className="text-sm font-medium text-green-600 flex items-center gap-1 group-hover:gap-2 transition-all">
+                          View Details
+                          <ArrowUpRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </CardContent>
                 </div>
               </Card>
             </motion.div>
-          ))}
+          </div>
         </div>
       </div>
     </section>

@@ -24,9 +24,9 @@ export default async function Home({ params }: LanguageParams) {
           <AboutSection />
           <WardInfo />
           <HistoryTimeline />
-          <InteractiveMap />
+          {/* <InteractiveMap />
           <NewsUpdates />
-          <PhotoGallery />
+          <PhotoGallery /> */}
         </div>
         <Footer lng={lng} />
       </main>

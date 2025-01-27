@@ -4,7 +4,13 @@ import FacebookIcon from "./logos/facebook";
 import InstagramIcon from "./logos/instagram";
 import TwitterIcon from "./logos/twitter";
 import YoutubeIcon from "./logos/youtube";
-import { Copyright } from "lucide-react";
+import {
+  Copyright,
+  MapPin,
+  FileText,
+  Download,
+  ExternalLink,
+} from "lucide-react";
 import { useTranslation } from "@/app/i18n";
 
 interface FooterProps {
@@ -12,51 +18,128 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = async ({ lng }) => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = await useTranslation(lng, "footer");
-  console.log(lng);
+
+  const resources = [
+    { label: t("profile"), icon: FileText, href: "/profile" },
+    { label: t("map"), icon: MapPin, href: "/map" },
+    { label: t("downloads"), icon: Download, href: "/downloads" },
+  ];
+
+  const socials = [
+    {
+      icon: FacebookIcon,
+      href: "https://www.facebook.com/",
+      label: "Facebook",
+    },
+    {
+      icon: InstagramIcon,
+      href: "https://www.instagram.com/",
+      label: "Instagram",
+    },
+    { icon: TwitterIcon, href: "https://www.twitter.com/", label: "Twitter" },
+    { icon: YoutubeIcon, href: "https://www.youtube.com/", label: "YouTube" },
+  ];
+
   return (
-    <footer className="w-full bg-[#F1F1F1] py-[20px] h-[308px] flex flex-col items-center justify-center">
-      <div className="flex flex-col gap-[24px] w-[1080px] tracking-[-0.4px]">
-        <div className="flex justify-between">
-          <div className="flex flex-col gap-[8px]">
-            <h1 className="text-[#000000] text-[14px]">{t("resources")}</h1>
-            <ul className="flex flex-col gap-[4px]">
-              <li className="text-[#3E3E3E] text-[12px]">{t("profile")}</li>
-              <li className="text-[#3E3E3E] text-[12px]">{t("map")}</li>
-              <li className="text-[#3E3E3E] text-[12px]">{t("downloads")}</li>
+    <footer className="relative overflow-hidden">
+      {/* Background gradients */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white to-green-50/30" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Main Footer Content */}
+        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* About Column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">Likhu Pike</h3>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {t("municipality")}
+            </p>
+            <div className="pt-2">
+              <Link
+                href="https://digprofile.com/likhupike"
+                className="inline-flex items-center gap-2 text-sm text-green-600 hover:text-green-700 transition-colors"
+              >
+                Visit Website <ExternalLink className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Resources Column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t("resources")}
+            </h3>
+            <ul className="space-y-3">
+              {resources.map((resource) => (
+                <li key={resource.label}>
+                  <Link
+                    href={resource.href}
+                    className="group flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"
+                  >
+                    <resource.icon className="w-4 h-4" />
+                    <span className="text-sm">{resource.label}</span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          <div className="flex flex-col gap-[8px]">
-            <h1 className="text-[#000000] text-[14px] text-right">
+
+          {/* Contact Column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {t("contact")}
+            </h3>
+            <div className="space-y-3 text-sm text-gray-600">
+              <p>Chaulakharka, Solukhumbu</p>
+              <p>Nepal</p>
+              <p>info@likhupike.gov.np</p>
+              <p>+977-1-234567</p>
+            </div>
+          </div>
+
+          {/* Social Column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900">
               {t("followUs")}
-            </h1>
-            <ul className="flex justify-end gap-[6px]">
-              <Link href="https://www.facebook.com/">
-                <FacebookIcon />
-              </Link>
-              <Link href="https://www.instagram.com/">
-                <InstagramIcon />
-              </Link>
-              <Link href="https://www.twitter.com/">
-                <TwitterIcon />
-              </Link>
-              <Link href="https://www.youtube.com/">
-                <YoutubeIcon />
-              </Link>
-            </ul>
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {socials.map((social) => (
+                <Link
+                  key={social.label}
+                  href={social.href}
+                  className="p-2 rounded-lg bg-white hover:bg-green-50 transition-colors"
+                  aria-label={social.label}
+                >
+                  <social.icon />
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="flex justify-between">
-          <div className="flex items-center gap-[2px]">
-            <span className="text-[10px] text-[#5E5E5E]">{t("copyright")}</span>
-            <Copyright className="text-[#363636] stroke-[1.5px] w-[12px] h-[12px]" />
-            <span className="text-[10px] text-[#5E5E5E]">
-              {t(`date-${new Date().getFullYear()}`)}
-            </span>
+
+        {/* Bottom Bar */}
+        <div className="py-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Copyright className="w-4 h-4" />
+              <span>{t(`date-${new Date().getFullYear()}`)}</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link
+                href="/privacy"
+                className="hover:text-green-600 transition-colors"
+              >
+                {t("privacy")}
+              </Link>
+              <Link
+                href="/terms"
+                className="hover:text-green-600 transition-colors"
+              >
+                {t("terms")}
+              </Link>
+            </div>
           </div>
-          <div className="text-[10px] text-[#5E5E5E]">{t("terms")}</div>
-          <p className="text-[10px] text-[#5E5E5E]">{t("municipality")}</p>
         </div>
       </div>
     </footer>

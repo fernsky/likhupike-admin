@@ -1,18 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  Calendar,
   Flag,
   Users,
   Building,
   FileText,
   Award,
-  ChevronRight,
   MapPin,
   Sparkles,
+  InfoIcon,
+  Milestone,
+  Target,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const HistoryTimeline = () => {
   const events = [
@@ -22,10 +23,13 @@ const HistoryTimeline = () => {
       description:
         "Promulgation of the new Constitution of Nepal, establishing federal democratic republic",
       icon: Flag,
-      color: "bg-green-100 text-green-600",
+      color: "from-green-500 to-emerald-600",
       location: "Kathmandu",
-      impact: "National restructuring",
       category: "Governance",
+      stats: [
+        { label: "Provinces", value: "7" },
+        { label: "Local Units", value: "753" },
+      ],
     },
     {
       year: 2017,
@@ -33,7 +37,11 @@ const HistoryTimeline = () => {
       description:
         "Official establishment of Likhu Pike Rural Municipality under the new federal structure",
       icon: Building,
-      color: "bg-emerald-100 text-emerald-600",
+      color: "from-emerald-500 to-green-600",
+      stats: [
+        { label: "Area Coverage", value: "124.38 km²" },
+        { label: "Initial Wards", value: "5" },
+      ],
     },
     {
       year: 2018,
@@ -63,9 +71,8 @@ const HistoryTimeline = () => {
   return (
     <section className="py-24 bg-white relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-green-50/50 to-transparent" />
-      <div className="absolute top-0 left-0 w-64 h-64 bg-green-100 rounded-full filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-100 rounded-full filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+      <div className="absolute inset-0 bg-gradient-to-b from-green-50/50 to-white/80" />
+      <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-white to-transparent" />
 
       <div className="container mx-auto px-4 relative">
         <div className="max-w-3xl mx-auto text-center mb-16">
@@ -83,7 +90,7 @@ const HistoryTimeline = () => {
 
         <div className="relative max-w-5xl mx-auto">
           {/* Timeline Line */}
-          <div className="absolute left-[20px] md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-green-200 via-green-400 to-green-200 md:transform md:-translate-x-1/2" />
+          <div className="absolute left-[30px] md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-green-200 via-green-400 to-green-200 md:transform md:-translate-x-1/2" />
 
           {events.map((event, index) => (
             <motion.div
@@ -91,82 +98,103 @@ const HistoryTimeline = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.2 }}
               key={event.year}
-              className={`relative flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-12 ${
+              className={`relative flex flex-col md:flex-row items-start gap-4 md:gap-12 mb-16 ${
                 index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
               }`}
             >
-              {/* Enhanced Timeline Point for Mobile */}
+              {/* Enhanced Timeline Point */}
               <motion.div
-                className="absolute left-[16px] md:left-1/2 z-10 top-[24px] md:top-1/2 transform -translate-y-1/2 md:-translate-x-1/2"
-                whileHover={{ scale: 1.2 }}
+                className="absolute left-[8px] md:left-1/2 z-10 top-[32px] md:top-1/2 transform -translate-y-1/2 md:-translate-x-1/2"
+                whileHover={{ scale: 1.05 }}
               >
-                <div className="w-12 h-12 md:w-4 md:h-4 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg flex items-center justify-center md:bg-primary group-hover:shadow-emerald-500/25">
-                  <span className="text-white text-sm font-semibold md:hidden">
-                    {event.year}
-                  </span>
-                </div>
-                {/* Mobile Year Label */}
-                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-medium text-green-600 bg-white px-2 py-1 rounded-full shadow-sm border border-green-100 md:hidden">
-                  {event.category}
+                <div className="flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg flex items-center justify-center text-white">
+                    <span className="text-base font-bold">{event.year}</span>
+                  </div>
+                  {/* Year Label for desktop */}
+                  <div className="hidden md:block mt-2 px-3 py-1 rounded-md bg-white/90 shadow-sm border border-green-100">
+                    <span className="text-sm font-medium text-green-600">
+                      {event.category || "Milestone"}
+                    </span>
+                  </div>
                 </div>
               </motion.div>
 
-              {/* Content */}
+              {/* Content Container */}
               <div
-                className={`pl-20 md:pl-0 w-full md:w-1/2 ${
-                  index % 2 === 0 ? "md:pr-12" : "md:pl-12"
+                className={`pl-24 md:pl-0 w-full md:w-[calc(50%-3rem)] ${
+                  index % 2 === 0 ? "md:pr-16" : "md:pl-16"
                 }`}
               >
-                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group">
-                  <div className="relative">
-                    {/* Enhanced gradient header */}
-                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-green-500/5" />
+                <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300">
+                  <div className="relative h-full">
+                    {/* Enhanced gradient background */}
+                    <div
+                      className={`absolute inset-x-0 top-0 h-32 bg-gradient-to-br ${event.color} opacity-10 group-hover:opacity-15 transition-opacity`}
+                    />
 
-                    <div className="relative p-4 md:p-6">
-                      {/* Mobile-optimized header */}
-                      <div className="flex items-start md:items-center gap-3 mb-4">
-                        <div
-                          className={`hidden md:flex p-3 rounded-xl ${event.color} backdrop-blur-sm group-hover:scale-110 transition-transform`}
-                        >
-                          <event.icon className="w-5 h-5" />
-                        </div>
-                        <div className="space-y-1 w-full">
-                          <div className="flex items-center justify-between">
-                            <Badge
-                              variant="outline"
-                              className="font-medium hidden md:inline-flex"
-                            >
-                              {event.category}
-                            </Badge>
-                            <span className="hidden md:block text-sm font-semibold text-primary">
-                              {event.year}
-                            </span>
+                    <CardContent className="relative p-6">
+                      <div className="flex flex-col gap-6">
+                        {/* Header with Icon and Category */}
+                        <div className="flex items-start justify-between">
+                          <div
+                            className={`p-3 w-fit rounded-xl bg-gradient-to-br ${event.color} text-white group-hover:scale-105 transition-transform`}
+                          >
+                            <event.icon className="w-5 h-5" />
                           </div>
+                          <Badge
+                            variant="outline"
+                            className="font-medium flex items-center gap-1.5"
+                          >
+                            <Milestone className="w-3.5 h-3.5" />
+                            {event.category || "Milestone"}
+                          </Badge>
                         </div>
-                      </div>
 
-                      {/* Rest of the content */}
-                      <div className="space-y-3">
-                        <h3 className="text-lg md:text-xl font-bold text-gray-900">
-                          {event.title}
-                        </h3>
-                        <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-                          {event.description}
-                        </p>
-                      </div>
+                        {/* Main Content */}
+                        <div className="space-y-4">
+                          <h3 className="text-xl font-bold text-gray-900">
+                            {event.title}
+                          </h3>
+                          <p className="text-gray-600 text-sm leading-relaxed">
+                            {event.description}
+                          </p>
 
-                      <div className="pt-4 mt-4 border-t flex flex-col md:flex-row gap-2 md:gap-0 md:items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-500">
-                            {event.location}
-                          </span>
+                          {/* Stats Grid */}
+                          {event.stats && (
+                            <div className="grid grid-cols-2 gap-4 pt-4">
+                              {event.stats.map((stat, i) => (
+                                <div
+                                  key={i}
+                                  className="bg-gray-50/50 rounded-lg p-3 hover:bg-gray-50/80 transition-colors"
+                                >
+                                  <p className="text-sm text-gray-500 mb-1">
+                                    {stat.label}
+                                  </p>
+                                  <p className="text-lg font-semibold text-gray-900">
+                                    {stat.value}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <button className="flex items-center gap-1 text-primary font-medium hover:gap-2 transition-all w-full md:w-auto justify-center md:justify-start">
-                          Learn more <ChevronRight className="w-4 h-4" />
-                        </button>
+
+                        {/* Enhanced Footer */}
+                        {event.location && (
+                          <div className="flex items-center justify-between pt-4 mt-2 border-t">
+                            {event.location && (
+                              <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-green-600" />
+                                <span className="text-sm text-gray-600">
+                                  {event.location}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    </CardContent>
                   </div>
                 </Card>
               </div>

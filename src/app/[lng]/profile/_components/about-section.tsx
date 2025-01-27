@@ -36,114 +36,111 @@ const AboutSection = () => {
   ];
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white to-green-50/30" />
-      <div className="absolute top-0 left-0 w-64 h-64 bg-green-100 rounded-full filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-100 rounded-full filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+    <>
+      {/* Main section with background image */}
+      <section className="relative min-h-[85vh] py-24 overflow-hidden">
+        {/* Background Image and overlays */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/likhu-pike-landscape.jpg"
+            alt="Likhu Pike Landscape"
+            fill
+            className="object-cover object-center brightness-75 contrast-100 saturate-110"
+            priority
+            quality={90}
+          />
+          {/* Richer green-black overlays */}
+          <div className="absolute inset-0 bg-green-950/20" />
+          <div className="absolute inset-0 bg-gradient-to-br from-green-950/20 via-black/10 to-green-950/10" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/10 via-emerald-900/20 to-black/30 mix-blend-soft-light" />
+          <div className="absolute inset-0 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,40,0,0.3)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-green-950/10 to-black/30" />
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
+        {/* Content container */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="space-y-8"
+            transition={{ duration: 0.7 }}
+            className="text-center mb-16"
           >
-            {/* Section Header */}
-            <div className="space-y-4">
-              <Badge variant="outline" className="mb-4">
-                <Mountain className="w-4 h-4 mr-1" />
-                About Us
-              </Badge>
-              <h2 className="text-4xl font-bold tracking-tight text-gray-900">
-                About Likhu Pike
-              </h2>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                Discover the beauty and potential of our thriving rural
-                municipality
-              </p>
-            </div>
+            <Badge
+              variant="outline"
+              className="mb-4 bg-white/10 backdrop-blur-sm border-white/20 text-white/90"
+            >
+              <Mountain className="w-4 h-4 mr-1" />
+              About Us
+            </Badge>
+            <h2 className="text-4xl font-bold tracking-tight text-white/95 mb-4 drop-shadow-sm">
+              About Likhu Pike
+            </h2>
+            <p className="text-lg text-white/85 leading-relaxed max-w-2xl mx-auto">
+              Discover the beauty and potential of our thriving rural
+              municipality
+            </p>
+          </motion.div>
 
-            {/* Main Content */}
-            <div className="space-y-6 text-gray-600">
-              <p className="leading-relaxed tracking-tight">
-                Likhu Pike (नेपाली: लिखु पिके गाउँपालिका) is a rural
-                municipality established through the merger of former Village
-                Development Committees, covering 124.38 square kilometers of
-                diverse terrain.
-              </p>
-              <p className="leading-relaxed tracking-tight">
-                With a population of 5,534, our municipality represents a
-                vibrant community focused on sustainable development and
-                preserving our rich cultural heritage.
-              </p>
-            </div>
-
-            {/* Feature Grid */}
-            <div className="grid sm:grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300">
-                    <div className="relative h-full flex flex-col">
-                      <div
-                        className={`absolute inset-x-0 top-0 h-12 bg-gradient-to-br ${feature.color} opacity-10`}
-                      />
-                      <CardContent className="relative p-6">
-                        <div className="flex flex-col gap-4">
-                          <div
-                            className={`p-3 w-fit rounded-xl bg-gradient-to-br ${feature.color} text-white group-hover:scale-110 transition-transform`}
-                          >
-                            {feature.icon}
-                          </div>
-                          <div className="space-y-2">
-                            <h3 className="font-semibold text-gray-900">
-                              {feature.title}
-                            </h3>
-                            <p className="text-sm text-gray-500 leading-relaxed">
-                              {feature.description}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <Card className="bg-white/10 backdrop-blur-sm border-white/10 hover:bg-white/15 transition-all duration-300 shadow-md hover:shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col gap-6">
+                      <div className="p-3 w-fit rounded-xl bg-white/15 text-white/90">
+                        {feature.icon}
+                      </div>
+                      <div className="pt-2">
+                        <h3 className="font-medium text-white/90 mb-3 text-lg">
+                          {feature.title}
+                        </h3>
+                        <p className="text-white/80 text-sm leading-relaxed">
+                          {feature.description}
+                        </p>
+                      </div>
                     </div>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Image Section */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="relative"
-          >
-            <div className="relative h-[500px] rounded-2xl overflow-hidden shadow-2xl">
-              <Image
-                src="/images/likhu-pike-landscape.jpg"
-                alt="Likhu Pike Landscape"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-            </div>
-            <div className="absolute -bottom-6 -right-6 -z-10 w-full h-full rounded-2xl bg-green-100/50" />
-          </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Bottom text section with gradient background */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-green-50/50 to-white/80" />
+        <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-white to-transparent" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6"
+        >
+          <p className="text-gray-600 leading-relaxed tracking-tight">
+            Likhu Pike (नेपाली: लिखु पिके गाउँपालिका) is a rural municipality
+            established through the merger of former Village Development
+            Committees, covering 124.38 square kilometers of diverse terrain.
+          </p>
+          <p className="text-gray-600 leading-relaxed tracking-tight">
+            With a population of 5,534, our municipality represents a vibrant
+            community focused on sustainable development and preserving our rich
+            cultural heritage.
+          </p>
+        </motion.div>
+      </section>
+    </>
   );
 };
 
