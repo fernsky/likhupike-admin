@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ChangeLanguage from "./change-language";
 import { useTranslation } from "@/app/i18n/client";
 import Search from "./search";
@@ -13,8 +13,11 @@ import {
   Download,
   User,
   MapPin,
-  Search as SearchIcon,
+  Sparkles,
+  Mountain,
+  ChevronRight,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface NavbarProps {
   lng: string;
@@ -23,94 +26,145 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ lng }) => {
   const { t } = useTranslation(lng, "navbar", {});
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const menuItems = [
     {
       href: `/${lng}/profile`,
       label: t("profile"),
-      icon: <User className="w-4 h-4" />,
+      icon: User,
+      color: "from-green-500 to-emerald-600",
+      description: "View municipality profile",
     },
-    { href: `/${lng}/map`, label: t("map"), icon: <Map className="w-4 h-4" /> },
+    {
+      href: `/${lng}/profile/map`,
+      label: t("map"),
+      icon: Map,
+      color: "from-emerald-500 to-green-600",
+      description: "Explore interactive map",
+    },
     {
       href: "#",
       label: t("downloads"),
-      icon: <Download className="w-4 h-4" />,
+      icon: Download,
+      color: "from-green-400 to-emerald-500",
+      description: "Access documents & files",
     },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-green-100/50">
-      <div className="bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "shadow-md" : ""}`}
+    >
+      <div
+        className={`bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 transition-all duration-300 ${scrolled ? "py-2" : "py-4"}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href={`/${lng}`} className="flex items-center gap-2 group">
-              <div className="p-1 rounded-lg bg-green-100 group-hover:bg-green-200 transition-colors">
-                <MapPin className="w-5 h-5 text-green-700" />
+          <div className="flex items-center justify-between">
+            {/* Enhanced Logo */}
+            <Link href={`/${lng}`} className="flex items-center gap-3 group">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 text-white group-hover:shadow-lg group-hover:shadow-green-500/25 transition-all duration-300">
+                <Mountain className="w-5 h-5" />
               </div>
-              <span className="text-green-800 font-semibold text-lg tracking-tight group-hover:text-green-700 transition-colors">
-                {t("brand")}
-              </span>
+              <div className="flex flex-col">
+                <span className="text-gray-900 font-bold tracking-tight group-hover:text-green-600 transition-colors">
+                  {t("brand")}
+                </span>
+                <Badge
+                  variant="outline"
+                  className="hidden sm:flex items-center gap-1 mt-1"
+                >
+                  <Sparkles className="w-3 h-3" />
+                  <span className="text-[10px]">Rural Municipality</span>
+                </Badge>
+              </div>
             </Link>
 
-            {/* Desktop Menu */}
+            {/* Simplified Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
               <div className="relative">
                 <Search />
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-4">
                 {menuItems.map((item) => (
                   <Link
                     key={item.label}
                     href={item.href}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-green-700 rounded-md hover:bg-green-50 transition-all duration-200"
+                    className="group flex items-center gap-3 px-3 py-2"
                   >
-                    {item.icon}
-                    <span className="tracking-wide">{item.label}</span>
+                    <div className="p-2 rounded-lg border border-green-500/20 group-hover:border-green-500/40 transition-colors">
+                      <item.icon className="w-4 h-4 text-green-600" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-600 group-hover:text-green-600 transition-colors">
+                      {item.label}
+                    </span>
                   </Link>
                 ))}
-                <div className="pl-2 border-l border-green-100">
+                <div className="pl-4 ml-4 border-l border-green-100">
                   <ChangeLanguage lng={lng} />
                 </div>
               </div>
             </div>
 
-            {/* Mobile menu button */}
-            <button
-              className="md:hidden p-2 rounded-lg text-gray-700 hover:text-green-700 hover:bg-green-50 transition-colors"
+            {/* Enhanced Mobile Menu Button */}
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="md:hidden p-2 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-600/10 text-green-700 hover:bg-green-50 transition-colors"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
+            </motion.button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Enhanced Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
               className="md:hidden border-t border-green-100"
             >
-              <div className="bg-white px-4 pt-2 pb-3 space-y-3">
-                <div className="p-2">
+              <div className="bg-gradient-to-b from-white to-green-50/30 px-4 pt-2 pb-3">
+                <div className="p-2 mb-3">
                   <Search />
                 </div>
-                {menuItems.map((item) => (
-                  <Link
+                {menuItems.map((item, index) => (
+                  <motion.div
                     key={item.label}
-                    href={item.href}
-                    className="flex items-center gap-3 px-3 py-2.5 text-base font-medium text-gray-700 hover:text-green-700 rounded-lg hover:bg-green-50 transition-all duration-200"
-                    onClick={() => setIsOpen(false)}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    {item.icon}
-                    <span className="tracking-wide">{item.label}</span>
-                  </Link>
+                    <Link
+                      href={item.href}
+                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-gradient-to-br hover:from-green-500/10 hover:to-emerald-600/10 group transition-all duration-300"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-sm group-hover:shadow-md transition-all">
+                        <item.icon className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors">
+                          {item.label}
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          {item.description}
+                        </p>
+                      </div>
+                    </Link>
+                  </motion.div>
                 ))}
-                <div className="px-3 py-2.5 border-t border-green-100">
+                <div className="p-3 mt-2 border-t border-green-100">
                   <ChangeLanguage lng={lng} />
                 </div>
               </div>

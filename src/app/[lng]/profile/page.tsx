@@ -5,9 +5,9 @@ import Statistics from "./_components/statistics";
 import AboutSection from "./_components/about-section";
 import WardInfo from "./_components/ward-info";
 import HistoryTimeline from "./_components/history-timeline";
-import InteractiveMap from "./_components/interactive-map";
-import NewsUpdates from "./_components/news-updates";
-import PhotoGallery from "./_components/photo-gallery";
+// import InteractiveMap from "./_components/interactive-map";
+// import NewsUpdates from "./_components/news-updates";
+// import PhotoGallery from "./_components/photo-gallery";
 import Footer from "./_components/footer";
 import { LanguageParams } from "./_store/types";
 import { ParallaxProvider } from "react-scroll-parallax";
@@ -24,9 +24,9 @@ export default async function Home({ params }: LanguageParams) {
           <AboutSection />
           <WardInfo />
           <HistoryTimeline />
-          <InteractiveMap />
+          {/* <InteractiveMap />
           <NewsUpdates />
-          <PhotoGallery />
+          <PhotoGallery /> */}
         </div>
         <Footer lng={lng} />
       </main>
