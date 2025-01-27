@@ -55,30 +55,8 @@ export default function CreateIndividual() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      const formattedData = {
-        ...values,
-        // Convert number values to strings for API
-        wardNo: values.wardNo?.toString(),
-        age: values.age?.toString(),
-        marriedAge: values.marriedAge?.toString(),
-        aliveSons: values.aliveSons?.toString(),
-        aliveDaughters: values.aliveDaughters?.toString(),
-        totalBornChildren: values.totalBornChildren?.toString(),
-        deadSons: values.deadSons?.toString(),
-        deadDaughters: values.deadDaughters?.toString(),
-        totalDeadChildren: values.totalDeadChildren?.toString(),
-        recentBornSons: values.recentBornSons?.toString(),
-        recentBornDaughters: values.recentBornDaughters?.toString(),
-        totalRecentChildren: values.totalRecentChildren?.toString(),
-        prenatalCheckups: values.prenatalCheckups?.toString(),
-        firstDeliveryAge: values.firstDeliveryAge?.toString(),
-        absenteeAge: values.absenteeAge?.toString(),
-        monthsTrained: values.monthsTrained?.toString(),
-        absenteeCashAmount: values.absenteeCashAmount?.toString(),
-      };
-      console.log(formattedData);
       //@ts-ignore
-      await createMutation.mutateAsync(formattedData);
+      await createMutation.mutateAsync(values);
     } catch (error) {
       console.error("Form submission error:", error);
       toast.error("Failed to create individual");
@@ -170,7 +148,7 @@ export default function CreateIndividual() {
                             type="number"
                             {...field}
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(parseInt(e.target.value, 10))
                             }
                           />
                         </FormControl>
@@ -240,7 +218,7 @@ export default function CreateIndividual() {
                             type="number"
                             {...field}
                             onChange={(e) =>
-                              field.onChange(e.target.valueAsNumber)
+                              field.onChange(parseInt(e.target.value, 10))
                             }
                           />
                         </FormControl>
@@ -398,7 +376,9 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(e.target.valueAsNumber)
+                                      field.onChange(
+                                        parseInt(e.target.value, 10),
+                                      )
                                     }
                                   />
                                 </FormControl>
@@ -417,7 +397,9 @@ export default function CreateIndividual() {
                                     type="number"
                                     {...field}
                                     onChange={(e) =>
-                                      field.onChange(e.target.valueAsNumber)
+                                      field.onChange(
+                                        parseInt(e.target.value, 10),
+                                      )
                                     }
                                   />
                                 </FormControl>
@@ -532,7 +514,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(e.target.valueAsNumber)
+                                  field.onChange(parseInt(e.target.value, 10))
                                 }
                               />
                             </FormControl>
@@ -592,7 +574,7 @@ export default function CreateIndividual() {
                               type="number"
                               {...field}
                               onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
+                                field.onChange(parseInt(e.target.value, 10))
                               }
                             />
                           </FormControl>
@@ -710,7 +692,7 @@ export default function CreateIndividual() {
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                  field.onChange(e.target.valueAsNumber)
+                                  field.onChange(parseInt(e.target.value, 10))
                                 }
                               />
                             </FormControl>
@@ -770,7 +752,7 @@ export default function CreateIndividual() {
                                   type="number"
                                   {...field}
                                   onChange={(e) =>
-                                    field.onChange(e.target.valueAsNumber)
+                                    field.onChange(parseInt(e.target.value, 10))
                                   }
                                 />
                               </FormControl>
