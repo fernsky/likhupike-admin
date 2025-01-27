@@ -1,8 +1,9 @@
-// import { createTRPCRouter } from "@/server/api/trpc";
-// import { createIndividual } from "./procedures/mutation";
-// // ...other imports
+import { createTRPCRouter } from "@/server/api/trpc";
+import { createIndividual, updateIndividual } from "./procedures/mutation";
+// ...other imports...
 
-// export const individualRouter = createTRPCRouter({
-//   createNewIndividual: createIndividual, // Make sure this matches the mutation name used in the component
-//   // ...other procedures
-// });
+export const individualRouter = createTRPCRouter({
+  createNewIndividual: createIndividual,
+  updateIndividual: updateIndividual,
+  // ...other procedures...
+});
