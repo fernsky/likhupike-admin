@@ -1,6 +1,9 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { FamilySchema } from "@/server/db/schema/family";
+import { type InferModel } from "drizzle-orm";
+import { likhupikeFamily } from "@/server/db/schema/family";
 import { Button } from "@/components/ui/button";
+
+type FamilySchema = InferModel<typeof likhupikeFamily>;
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowUpDown,

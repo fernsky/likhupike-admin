@@ -73,5 +73,5 @@ export const likhupikeFamily = pgTable("likhupike_family", {
 });
 
 
-export type FamilySchema = typeof likhupikeFamily.$inferSelect;
+export default likhupikeFamily;
 
