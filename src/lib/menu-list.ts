@@ -11,6 +11,7 @@ import {
   User2Icon,
   User,
   Users,
+  Banknote,
 } from "lucide-react";
 
 export type Role = "admin" | "superadmin" | "enumerator";
@@ -62,6 +63,13 @@ const menuConfig: Menu[] = [
     icon:Users,
     roles: ["admin"],
   },
+ {
+    href: "/businesses",
+    label: "Businesses",
+    icon:Banknote,
+    roles: ["admin"],
+  },
+
 ];
 
 export function getMenuList(pathname: string, userRole: Role): Group[] {
