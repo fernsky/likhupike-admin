@@ -338,6 +338,7 @@ export interface ChartAxis {
 }
 
 export interface ChartDataPoint {
+  category: string;
   label: string;
   value: number;
   color?: string;

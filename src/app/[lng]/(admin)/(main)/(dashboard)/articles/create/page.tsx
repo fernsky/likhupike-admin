@@ -67,7 +67,7 @@ export default function CreateArticlePage() {
                   <div
                     key={nodeId}
                     className={cn(
-                      "border rounded-lg p-4",
+                      "",
                       activeNodeId === nodeId &&
                         !previewMode &&
                         "ring-2 ring-primary",

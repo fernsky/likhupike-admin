@@ -42,7 +42,7 @@ export const NodeRenderer = ({ node }: NodeRendererProps) => {
       ref={setNodeRef}
       style={style}
       className={cn(
-        "group relative border rounded-lg p-4 bg-white",
+        "group relative  bg-white",
         isDragging && "opacity-50 border-dashed",
       )}
     >

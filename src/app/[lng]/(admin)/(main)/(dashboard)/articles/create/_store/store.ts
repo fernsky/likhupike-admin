@@ -124,7 +124,18 @@ export const useArticleStore = create<ArticleStore>((set) => ({
           (node: { id: string }) => node.id === nodeId,
         );
         if (nodeIndex !== -1) {
-          Object.assign(state.article.structure.nodes[nodeIndex], updates);
+          // Deep merge the updates instead of using Object.assign
+          state.article.structure.nodes[nodeIndex] = {
+            ...state.article.structure.nodes[nodeIndex],
+            ...updates,
+            // Handle nested data updates specially
+            ...(updates.data && {
+              data: {
+                ...state.article.structure.nodes[nodeIndex].data,
+                ...updates.data,
+              },
+            }),
+          };
         }
       }),
     ),

@@ -13,11 +13,12 @@ export const ParagraphPreview = ({ node, language }: ParagraphPreviewProps) => {
   return (
     <p
       className={cn(
-        "my-4",
+        "text-[16px] text-[#343434] tracking-[-0.7px] font-[420] leading-relaxed",
+        "mb-6",
         node.dropcap &&
-          "first-letter:text-4xl first-letter:font-bold first-letter:mr-1",
-        node.columns === 2 && "columns-2 gap-8",
-        node.columns === 3 && "columns-3 gap-8",
+          "first-letter:text-6xl first-letter:font-serif first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-1",
+        node.columns === 2 && "columns-2 gap-x-16",
+        node.columns === 3 && "columns-3 gap-x-16",
         node.className,
       )}
     >
