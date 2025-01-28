@@ -31,27 +31,6 @@ export const chapterRelations = relations(chapters, ({ one }) => ({
   }),
 }));
 
-export const sections = pgTable("sections", {
-  id: varchar("id", { length: 15 }).primaryKey(),
-  title_en: varchar("title_en", { length: 255 }).notNull(),
-  title_ne: varchar("title_ne", { length: 255 }).notNull(),
-  slug: varchar("slug", { length: 255 }).notNull(),
-
-  content_schema: json("content_schema").notNull().default({}),
-  chapter_id: varchar("chapter_id", { length: 15 }).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(
-    () => new Date(),
-  ),
-});
-
-export const sectionRelations = relations(sections, ({ one }) => ({
-  chapter: one(chapters, {
-    fields: [sections.chapter_id],
-    references: [chapters.id],
-  }),
-}));
-
 export const municipalityBoundaries = pgTable("municipality_boundaries", {
   id: varchar("id", { length: 15 }).primaryKey(),
   name_en: varchar("name_en", { length: 255 }).notNull(),
@@ -165,9 +144,6 @@ export type NewPart = typeof parts.$inferInsert;
 
 export type Chapter = typeof chapters.$inferSelect;
 export type NewChapter = typeof chapters.$inferInsert;
-
-export type Section = typeof sections.$inferSelect;
-export type NewSection = typeof sections.$inferInsert;
 
 export type MunicipalityBoundary = typeof municipalityBoundaries.$inferSelect;
 export type NewMunicipalityBoundary =
