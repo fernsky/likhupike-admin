@@ -5,8 +5,10 @@ import { protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import { business } from "@/server/db/schema/business";
 import { updateBusinessSchema } from "../business.schema";
+import { rbacMiddleware } from "@/server/api/middleware/rbac-middleware";
 
 export const getAllBusinesses = protectedProcedure
+  .use(rbacMiddleware)
   .input(
     z.object({
       limit: z.number().min(1).max(100).default(10),
@@ -15,7 +17,14 @@ export const getAllBusinesses = protectedProcedure
       search: z.string().optional(),
     })
   )
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
+    if (ctx.user.role === null || !['admin', 'editor', 'viewer'].includes(ctx.user.role)) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view businesses',
+      });
+    }
+
     const { limit, cursor, wardNo, search } = input;
 
     try {
@@ -41,8 +50,16 @@ export const getAllBusinesses = protectedProcedure
   });
 
 export const getBusinessById = protectedProcedure
+  .use(rbacMiddleware)
   .input(z.object({ id: z.string() }))
-  .query(async ({ input }) => {
+  .query(async ({ ctx, input }) => {
+    if (ctx.user.role === null || !['admin', 'editor', 'viewer'].includes(ctx.user.role)) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to view this business',
+      });
+    }
+
     try {
       const businessResult = await db
         .select()

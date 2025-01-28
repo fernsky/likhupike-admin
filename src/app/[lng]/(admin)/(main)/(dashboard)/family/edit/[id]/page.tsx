@@ -46,6 +46,15 @@ export default function EditFamily({ params }: { params: { id: string } }) {
     },
   });
 
+  const onSubmit = async (values: FormData) => {
+    try {
+      await updateMutation.mutateAsync(values);
+    } catch (error) {
+      console.error("Form submission error:", error);
+      toast.error("Failed to update family");
+    }
+  };
+
   const form = useForm({
     resolver: zodResolver(updateFamilySchema),
     defaultValues: {
@@ -58,7 +67,7 @@ export default function EditFamily({ params }: { params: { id: string } }) {
       devOrg: family?.devOrg ?? "",
       location: family?.location ?? "",
       altitude: family?.altitude ? Number(family.altitude) : undefined,
-      gpsAccuracy: family?.gpsAccuracy ?? undefined,
+      gpsAccuracy: family?.gpsAccuracy ? Number(family.gpsAccuracy) : undefined,
       headName: family?.headName ?? "",
       headPhone: family?.headPhone ?? "",
       totalMembers: family?.totalMembers ?? undefined,
@@ -106,14 +115,6 @@ export default function EditFamily({ params }: { params: { id: string } }) {
             className="hover:border-destructive hover:text-destructive"
           >
             Cancel
-          </Button>
-          <Button
-            type="submit"
-            form="family-form"
-            className="bg-primary hover:bg-primary/90"
-            disabled={updateMutation.isLoading}
-          >
-            {updateMutation.isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       }
@@ -469,6 +470,15 @@ export default function EditFamily({ params }: { params: { id: string } }) {
               </Card>
             </TabsContent>
           </Tabs>
+          <Button
+            type="submit"
+            form="family-form"
+            className="bg-primary hover:bg-primary/90"
+            disabled={updateMutation.isLoading}
+            onClick={() => form.handleSubmit(onSubmit)()}
+          >
+            {updateMutation.isLoading ? "Saving..." : "Save Changes"}
+          </Button>
         </form>
       </Form>
     </ContentLayout>

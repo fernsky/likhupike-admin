@@ -14,7 +14,7 @@ import {
   Banknote,
 } from "lucide-react";
 
-export type Role = "admin" | "superadmin" | "enumerator";
+export type Role = "admin" | "editor" | "viewer";
 
 type Submenu = {
   href: string;
@@ -42,7 +42,7 @@ const menuConfig: Menu[] = [
     href: "/",
     label: "Home",
     icon: LayoutGrid,
-    roles: ["admin"],
+    roles: ["admin","viewer"],
   },
  {
     href: "/users",
@@ -55,19 +55,19 @@ const menuConfig: Menu[] = [
     href: "/individual",
     label: "Individual",
     icon: User,
-    roles: ["admin"],
+    roles: ["admin","viewer","editor"],
   },
  {
     href: "/family",
     label: "Families",
     icon:Users,
-    roles: ["admin"],
+    roles: ["admin","viewer","editor"],
   },
  {
     href: "/businesses",
     label: "Businesses",
     icon:Banknote,
-    roles: ["admin"],
+    roles: ["admin","viewer","editor"],
   },
 
 ];

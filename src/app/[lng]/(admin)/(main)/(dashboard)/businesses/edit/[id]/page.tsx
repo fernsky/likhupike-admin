@@ -3,10 +3,11 @@
 import { ContentLayout } from "@/components/admin-panel/content-layout";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -15,6 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -22,128 +25,136 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { updateBuildingSchema } from "@/server/api/routers/building/building.schema";
-import { buildingChoices } from "@/lib/resources/building";
-import { useEffect } from "react";
-import { EnumeratorAssignment } from "@/components/building/enumerator-assignment";
-import { ComboboxSearchable } from "@/components/ui/combobox-searchable";
+import { Building2, MapPin, User, Briefcase, FileText } from "lucide-react";
 
-export default function EditBuilding({ params }: { params: { id: string } }) {
+export default function EditBusiness({ params }: { params: { id: string } }) {
   const router = useRouter();
   const decodedId = decodeURIComponent(params.id);
 
-  const form = useForm({
-    resolver: zodResolver(updateBuildingSchema),
-    defaultValues: {
-      surveyDate: "",
-      enumeratorName: "",
-      enumeratorId: "",
-      wardNumber: 0,
-      locality: "",
-      areaCode: "",
-      totalFamilies: 0,
-      totalBusinesses: 0,
-      landOwnership: "",
-      base: "",
-      outerWall: "",
-      roof: "",
-      floor: "",
-      mapStatus: "",
-      roadStatus: "",
-      timeToMarket: "",
-      timeToActiveRoad: "",
-      timeToPublicBus: "",
-      timeToHealthOrganization: "",
-      timeToFinancialOrganization: "",
-      areaId: "",
-      buildingToken: "",
-    },
-  });
-
-  const { data: areas } = api.area.getAreas.useQuery({
-    status: "all",
-  });
-
-  const selectedAreaId = form.watch("areaId");
-  const { data: areaTokens } = api.area.getAreaTokens.useQuery(
-    { areaId: selectedAreaId },
-    { enabled: !!selectedAreaId },
-  );
-
-  const {
-    data: building,
-    isLoading,
-    refetch: refetchBuilding,
-  } = api.building.getById.useQuery({
+  const { data: business, isLoading } = api.business.getById.useQuery({
     id: decodedId,
   });
 
-  const updateBuilding = api.building.update.useMutation({
+  const updateMutation = api.business.updateBusiness.useMutation({
     onSuccess: () => {
-      toast.success("Building updated successfully");
-      router.push(`/buildings/${decodedId}`);
+      toast.success("Business updated successfully");
+      router.push(`/businesses/${decodedId}`);
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
-  useEffect(() => {
-    if (building) {
-      form.reset({
-        surveyDate: building.surveyDate?.toISOString().split("T")[0] ?? "",
-        enumeratorName: building.enumeratorName ?? "",
-        enumeratorId: building.enumeratorId ?? "",
-        wardNumber: building.wardNumber ?? 0,
-        locality: building.locality ?? "",
-        areaCode: building.areaCode ?? "",
-        totalFamilies: building.totalFamilies ?? 0,
-        totalBusinesses: building.totalBusinesses ?? 0,
-
-        // Use the display values directly
-        landOwnership: building.landOwnership ?? "",
-        base: building.base ?? "",
-        outerWall: building.outerWall ?? "",
-        roof: building.roof ?? "",
-        floor: building.floor ?? "",
-        mapStatus: building.mapStatus ?? "",
-        roadStatus: building.roadStatus ?? "",
-        timeToMarket: building.timeToMarket ?? "",
-        timeToActiveRoad: building.timeToActiveRoad ?? "",
-        timeToPublicBus: building.timeToPublicBus ?? "",
-        timeToHealthOrganization: building.timeToHealthOrganization ?? "",
-        timeToFinancialOrganization: building.timeToFinancialOrganization ?? "",
-        areaId: building.areaId ?? "",
-        buildingToken: building.buildingToken ?? "",
-      });
-    }
-  }, [building, form]);
-
-  const onSubmit = (data: any) => {
-    // Submit the data directly without mapping
-    updateBuilding.mutate({
+  const form = useForm({
+    defaultValues: {
       id: decodedId,
-      data: {
-        ...data,
-        wardNumber: parseInt(data.wardNumber),
-        totalFamilies: parseInt(data.totalFamilies),
-        totalBusinesses: parseInt(data.totalBusinesses),
-      },
-    });
-  };
+      // Basic Info
+      businessName: business?.businessName ?? "",
+      wardNo: business?.wardNo ?? undefined,
+      areaCode: business?.areaCode ?? undefined,
+      businessNo: business?.businessNo ?? "",
+      locality: business?.locality ?? "",
+      enumeratorName: business?.enumeratorName ?? "",
+      phone: business?.phone ?? "",
+
+      // Operator Details
+      operatorName: business?.operatorName ?? "",
+      operatorPhone: business?.operatorPhone ?? "",
+      operatorAge: business?.operatorAge ?? undefined,
+      operatorGender: business?.operatorGender ?? "",
+      operatorEducation: business?.operatorEducation ?? "",
+
+      // Business Classification
+      businessNature: business?.businessNature ?? "",
+      businessNatureOther: business?.businessNatureOther ?? "",
+      businessType: business?.businessType ?? "",
+      businessTypeOther: business?.businessTypeOther ?? "",
+
+      // Registration
+      registrationStatus: business?.registrationStatus ?? "",
+      registeredBodies: business?.registeredBodies ?? [],
+      registeredBodiesOther: business?.registeredBodiesOther ?? "",
+      statutoryStatus: business?.statutoryStatus ?? "",
+      statutoryStatusOther: business?.statutoryStatusOther ?? "",
+      panStatus: business?.panStatus ?? "",
+      panNumber: business?.panNumber ?? "",
+
+      // Employees
+      hasPartners: business?.hasPartners ?? "",
+      totalPartners: business?.totalPartners ?? undefined,
+      nepaliMalePartners: business?.nepaliMalePartners ?? undefined,
+      nepaliFemalePartners: business?.nepaliFemalePartners ?? undefined,
+      hasForeignPartners: business?.hasForeignPartners ?? "",
+      foreignMalePartners: business?.foreignMalePartners ?? undefined,
+      foreignFemalePartners: business?.foreignFemalePartners ?? undefined,
+      hasInvolvedFamily: business?.hasInvolvedFamily ?? "",
+      totalInvolvedFamily: business?.totalInvolvedFamily ?? undefined,
+      maleInvolvedFamily: business?.maleInvolvedFamily ?? undefined,
+      femaleInvolvedFamily: business?.femaleInvolvedFamily ?? undefined,
+
+      // Permanent Employees
+      hasPermanentEmployees: business?.hasPermanentEmployees ?? "",
+      totalPermanentEmployees: business?.totalPermanentEmployees ?? undefined,
+      nepaliMalePermanentEmployees:
+        business?.nepaliMalePermanentEmployees ?? undefined,
+      nepaliFemalePermanentEmployees:
+        business?.nepaliFemalePermanentEmployees ?? undefined,
+      hasForeignPermanentEmployees:
+        business?.hasForeignPermanentEmployees ?? "",
+      foreignMalePermanentEmployees:
+        business?.foreignMalePermanentEmployees ?? undefined,
+      foreignFemalePermanentEmployees:
+        business?.foreignFemalePermanentEmployees ?? undefined,
+
+      // Temporary Employees
+      hasTemporaryEmployees: business?.hasTemporaryEmployees ?? "",
+      totalTemporaryEmployees: business?.totalTemporaryEmployees ?? undefined,
+      nepaliMaleTemporaryEmployees:
+        business?.nepaliMaleTemporaryEmployees ?? undefined,
+      nepaliFemaleTemporaryEmployees:
+        business?.nepaliFemaleTemporaryEmployees ?? undefined,
+      hasForeignTemporaryEmployees:
+        business?.hasForeignTemporaryEmployees ?? "",
+      foreignMaleTemporaryEmployees:
+        business?.foreignMaleTemporaryEmployees ?? undefined,
+      foreignFemaleTemporaryEmployees:
+        business?.foreignFemaleTemporaryEmployees ?? undefined,
+
+      // Specialized Business
+      aquacultureWardNo: business?.aquacultureWardNo ?? undefined,
+      pondCount: business?.pondCount ?? undefined,
+      pondArea: business?.pondArea ? Number(business.pondArea) : undefined,
+      fishProduction: business?.fishProduction
+        ? Number(business.fishProduction)
+        : undefined,
+      fingerlingNumber: business?.fingerlingNumber ?? undefined,
+      hasApiculture: business?.hasApiculture ?? "",
+      apicultureWardNo: business?.apicultureWardNo ?? undefined,
+      hiveCount: business?.hiveCount ?? undefined,
+      honeyProduction: business?.honeyProduction
+        ? Number(business.honeyProduction)
+        : undefined,
+
+      // Financial
+      investmentAmount: business?.investmentAmount
+        ? Number(business.investmentAmount)
+        : undefined,
+      totalInvestment: business?.totalInvestment
+        ? Number(business.totalInvestment)
+        : undefined,
+      annualIncome: business?.annualIncome
+        ? Number(business.annualIncome)
+        : undefined,
+      businessLocationOwnership: business?.businessLocationOwnership ?? "",
+      businessLocationOwnershipOther:
+        business?.businessLocationOwnershipOther ?? "",
+    },
+  });
 
   if (isLoading) {
     return (
-      <ContentLayout title="Edit Building">
+      <ContentLayout title="Edit Business">
         <div className="space-y-6">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-[200px] rounded-lg" />
@@ -153,325 +164,1297 @@ export default function EditBuilding({ params }: { params: { id: string } }) {
     );
   }
 
-  const FormCard = ({
-    title,
-    description,
-    children,
-  }: {
-    title: string;
-    description: string;
-    children: React.ReactNode;
-  }) => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg font-medium">{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">{children}</CardContent>
-    </Card>
-  );
-
-  // Add this to get the current building token for comparison
-  const currentBuildingToken = form.watch("buildingToken");
-
   return (
     <ContentLayout
-      title="Edit Building"
-      //@ts-ignore
+      title="Edit Business"
       subtitle={`ID: ${decodedId}`}
       actions={
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => router.push(`/buildings/${decodedId}`)}
+            onClick={() => router.back()}
+            className="hover:border-destructive hover:text-destructive"
           >
             Cancel
           </Button>
           <Button
             type="submit"
-            form="building-form"
-            disabled={updateBuilding.isLoading}
+            form="business-form"
+            className="bg-primary hover:bg-primary/90"
+            disabled={updateMutation.isLoading}
           >
-            {updateBuilding.isLoading ? "Saving..." : "Save Changes"}
+            {updateMutation.isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       }
     >
-      <div className="space-y-6 px-2 lg:px-10">
-        <EnumeratorAssignment
-          refetchBuilding={refetchBuilding}
-          buildingId={decodedId}
-          currentEnumeratorId={building?.userId ?? undefined}
-        />
+      <Form {...form}>
+        <form
+          id="business-form"
+          //@ts-ignore
+          onSubmit={form.handleSubmit((data) => updateMutation.mutate(data))}
+          className="space-y-6"
+        >
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-7">
+              <TabsTrigger value="basic">Basic Info</TabsTrigger>
+              <TabsTrigger value="operator">Operator</TabsTrigger>
+              <TabsTrigger value="classification">Classification</TabsTrigger>
+              <TabsTrigger value="registration">Registration</TabsTrigger>
+              <TabsTrigger value="employees">Employees</TabsTrigger>
+              <TabsTrigger value="specialized">Specialized</TabsTrigger>
+              <TabsTrigger value="financial">Financial</TabsTrigger>
+            </TabsList>
 
-        <Form {...form}>
-          <form
-            id="building-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-          >
-            <FormCard
-              title="Area Assignment"
-              description="Assign building to an area and token"
-            >
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField
-                  control={form.control}
-                  name="areaId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Area</FormLabel>
-                      <FormControl>
-                        <ComboboxSearchable
-                          options={[
-                            { value: "none", label: "None" },
-                            ...(areas?.map((area) => ({
-                              value: area.id,
-                              label: `Area ${area.code} (Ward ${area.wardNumber})`,
-                              searchTerms: [
-                                `${area.code}`,
-                                `${area.wardNumber}`,
-                              ],
-                            })) ?? []),
-                          ]}
-                          value={field.value || "none"}
-                          onChange={(value) => {
-                            field.onChange(value === "none" ? "" : value);
-                            // Reset building token when area changes
-                            form.setValue("buildingToken", "");
-                          }}
-                          placeholder="Search area..."
-                          className="w-[300px]"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="buildingToken"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Building Token</FormLabel>
-                      <FormControl>
-                        <ComboboxSearchable
-                          options={[
-                            { value: "none", label: "None" },
-                            ...(areaTokens?.tokens
-                              ?.filter(
-                                (token) =>
-                                  // Include tokens that are either unallocated or match the current token
-                                  token.status === "unallocated" ||
-                                  token.token === currentBuildingToken,
-                              )
-                              .map((token) => ({
-                                value: token.token,
-                                label: `Token ${token.token}`,
-                                searchTerms: [token.token],
-                              })) ?? []),
-                          ]}
-                          value={field.value || "none"}
-                          onChange={(value) =>
-                            field.onChange(value === "none" ? "" : value)
-                          }
-                          placeholder="Search token..."
-                          className="w-[300px]"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </FormCard>
-
-            <FormCard
-              title="Basic Information"
-              description="General information about the building"
-            >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                <FormField
-                  control={form.control}
-                  name="enumeratorName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Enumerator Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="wardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ward Number</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value?.toString()}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select ward" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {[1, 2, 3, 4, 5, 6, 7].map((ward) => (
-                            <SelectItem key={ward} value={ward.toString()}>
-                              Ward {ward}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="locality"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Locality</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </FormCard>
-
-            <FormCard
-              title="Building Details"
-              description="Physical characteristics of the building"
-            >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  {
-                    name: "landOwnership",
-                    label: "Land Ownership",
-                    choices: Object.values(buildingChoices.land_ownership),
-                  },
-                  {
-                    name: "base",
-                    label: "Base",
-                    choices: Object.values(buildingChoices.house_base),
-                  },
-                  {
-                    name: "outerWall",
-                    label: "Outer Wall",
-                    choices: Object.values(buildingChoices.house_outer_wall),
-                  },
-                  {
-                    name: "roof",
-                    label: "Roof",
-                    choices: Object.values(buildingChoices.house_roof),
-                  },
-                  {
-                    name: "floor",
-                    label: "Floor",
-                    choices: Object.values(buildingChoices.house_floor),
-                  },
-                  {
-                    name: "mapStatus",
-                    label: "Map Status",
-                    choices: Object.values(buildingChoices.map_status),
-                  },
-                ].map((field) => (
+            {/* Basic Information Tab */}
+            <TabsContent value="basic">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Basic Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
                   <FormField
-                    key={field.name}
                     control={form.control}
-                    name={field.name as any}
-                    render={({ field: formField }) => (
-                      <FormItem>
-                        <FormLabel>{field.label}</FormLabel>
-                        <Select
-                          onValueChange={formField.onChange}
-                          value={formField.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue
-                                placeholder={`Select ${field.label}`}
-                              />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {field.choices.map((value) => (
-                              <SelectItem key={value} value={value}>
-                                {value}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ))}
-              </div>
-            </FormCard>
-
-            <FormCard
-              title="Accessibility"
-              description="Time distances to various facilities"
-            >
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {[
-                  "timeToMarket",
-                  "timeToActiveRoad",
-                  "timeToPublicBus",
-                  "timeToHealthOrganization",
-                  "timeToFinancialOrganization",
-                ].map((fieldName) => (
-                  <FormField
-                    key={fieldName}
-                    control={form.control}
-                    name={fieldName as any}
+                    name="businessName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {fieldName
-                            .replace("timeTo", "")
-                            .replace(/([A-Z])/g, " $1")
-                            .trim()}
-                        </FormLabel>
+                        <FormLabel>Business Name *</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="wardNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ward Number *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value) || "")
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="areaCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Area Code</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value) || "")
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="businessNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="locality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Locality</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="enumeratorName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Enumerator Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Operator Details Tab */}
+            <TabsContent value="operator">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Operator Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="operatorName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Operator Name</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="operatorPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Operator Phone</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="operatorAge"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Operator Age</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value) || "")
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="operatorGender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Operator Gender</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          value={field.value}
+                          defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select time" />
+                              <SelectValue placeholder="Select gender" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.values(buildingChoices.time).map(
-                              (value) => (
-                                <SelectItem key={value} value={value}>
-                                  {value}
-                                </SelectItem>
-                              ),
-                            )}
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                ))}
+
+                  <FormField
+                    control={form.control}
+                    name="operatorEducation"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Education Level</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Business Classification Tab */}
+            <TabsContent value="classification">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Briefcase className="h-5 w-5" />
+                    Business Classification
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="businessNature"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Nature</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select nature" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="manufacturing">
+                              Manufacturing
+                            </SelectItem>
+                            <SelectItem value="service">Service</SelectItem>
+                            <SelectItem value="trading">Trading</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("businessNature") === "other" && (
+                    <FormField
+                      control={form.control}
+                      name="businessNatureOther"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Specify Other Nature</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="businessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Business Type</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="retail">Retail</SelectItem>
+                            <SelectItem value="wholesale">Wholesale</SelectItem>
+                            <SelectItem value="agriculture">
+                              Agriculture
+                            </SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("businessType") === "other" && (
+                    <FormField
+                      control={form.control}
+                      name="businessTypeOther"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Specify Other Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Registration & Legal Tab */}
+            <TabsContent value="registration">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Registration & Legal Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="registrationStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Registration Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="registered">
+                              Registered
+                            </SelectItem>
+                            <SelectItem value="unregistered">
+                              Unregistered
+                            </SelectItem>
+                            <SelectItem value="inProgress">
+                              In Progress
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="statutoryStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Statutory Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="private">Private</SelectItem>
+                            <SelectItem value="public">Public</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("statutoryStatus") === "other" && (
+                    <FormField
+                      control={form.control}
+                      name="statutoryStatusOther"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Specify Other Status</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  <FormField
+                    control={form.control}
+                    name="panStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PAN Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="registered">
+                              Registered
+                            </SelectItem>
+                            <SelectItem value="unregistered">
+                              Unregistered
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("panStatus") === "registered" && (
+                    <FormField
+                      control={form.control}
+                      name="panNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>PAN Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Employee Statistics Tab */}
+            <TabsContent value="employees">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Employee Statistics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Partners Section */}
+                  <div className="mb-8 space-y-4">
+                    <h3 className="text-lg font-semibold">Partners</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="hasPartners"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Has Partners?</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select option" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="yes">Yes</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {form.watch("hasPartners") === "yes" && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="totalPartners"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Total Partners</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliMalePartners"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Male Partners</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliFemalePartners"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Female Partners</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Permanent Employees Section */}
+                  <div className="mb-8 space-y-4">
+                    <h3 className="text-lg font-semibold">
+                      Permanent Employees
+                    </h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="hasPermanentEmployees"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Has Permanent Employees?</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select option" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="yes">Yes</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {form.watch("hasPermanentEmployees") === "yes" && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="totalPermanentEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Total Permanent Employees</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliMalePermanentEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Male Permanent</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliFemalePermanentEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Female Permanent</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="hasForeignPermanentEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Has Foreign Permanent?</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select option" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="yes">Yes</SelectItem>
+                                    <SelectItem value="no">No</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {form.watch("hasForeignPermanentEmployees") ===
+                            "yes" && (
+                            <>
+                              <FormField
+                                control={form.control}
+                                name="foreignMalePermanentEmployees"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      Foreign Male Permanent
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        {...field}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            parseInt(e.target.value) || "",
+                                          )
+                                        }
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="foreignFemalePermanentEmployees"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      Foreign Female Permanent
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        {...field}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            parseInt(e.target.value) || "",
+                                          )
+                                        }
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Temporary Employees Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">
+                      Temporary Employees
+                    </h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <FormField
+                        control={form.control}
+                        name="hasTemporaryEmployees"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Has Temporary Employees?</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select option" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="yes">Yes</SelectItem>
+                                <SelectItem value="no">No</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {form.watch("hasTemporaryEmployees") === "yes" && (
+                        <>
+                          <FormField
+                            control={form.control}
+                            name="totalTemporaryEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Total Temporary</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliMaleTemporaryEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Male Temporary</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="nepaliFemaleTemporaryEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Nepali Female Temporary</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseInt(e.target.value) || "",
+                                      )
+                                    }
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="hasForeignTemporaryEmployees"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Has Foreign Temporary?</FormLabel>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select option" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="yes">Yes</SelectItem>
+                                    <SelectItem value="no">No</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          {form.watch("hasForeignTemporaryEmployees") ===
+                            "yes" && (
+                            <>
+                              <FormField
+                                control={form.control}
+                                name="foreignMaleTemporaryEmployees"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      Foreign Male Temporary
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        {...field}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            parseInt(e.target.value) || "",
+                                          )
+                                        }
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name="foreignFemaleTemporaryEmployees"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>
+                                      Foreign Female Temporary
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="number"
+                                        {...field}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            parseInt(e.target.value) || "",
+                                          )
+                                        }
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Specialized Business Tab */}
+            <TabsContent value="specialized">
+              <div className="space-y-6">
+                {/* Aquaculture Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Aquaculture Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="pondCount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of Ponds</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value) || "")
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="pondArea"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Pond Area (sq.m)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="any"
+                              {...field}
+                              value={field.value ?? ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : null,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="fishProduction"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Fish Production (kg)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="any"
+                              {...field}
+                              value={field.value ?? ""}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : null,
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="fingerlingNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Number of Fingerlings</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(parseInt(e.target.value) || "")
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
+                {/* Apiculture Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Apiculture Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-4 md:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="hasApiculture"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Has Apiculture?</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select option" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="yes">Yes</SelectItem>
+                              <SelectItem value="no">No</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {form.watch("hasApiculture") === "yes" && (
+                      <>
+                        <FormField
+                          control={form.control}
+                          name="hiveCount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Number of Hives</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      parseInt(e.target.value) || "",
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="honeyProduction"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Honey Production (kg)</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="any"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      e.target.value
+                                        ? Number(e.target.value)
+                                        : null,
+                                    )
+                                  }
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
-            </FormCard>
-          </form>
-        </Form>
-      </div>
+            </TabsContent>
+
+            {/* Financial Information Tab */}
+            <TabsContent value="financial">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Financial Information</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="investmentAmount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Investment Amount (NPR)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="any"
+                            {...field}
+                            value={field.value ?? ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value ? Number(e.target.value) : null,
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="totalInvestment"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Total Investment (NPR)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="any"
+                            {...field}
+                            value={field.value ?? ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value ? Number(e.target.value) : null,
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="annualIncome"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Annual Income (NPR)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="any"
+                            {...field}
+                            value={field.value ?? ""}
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value ? Number(e.target.value) : null,
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="businessLocationOwnership"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location Ownership</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select ownership" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="owned">Owned</SelectItem>
+                            <SelectItem value="rented">Rented</SelectItem>
+                            <SelectItem value="leased">Leased</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("businessLocationOwnership") === "other" && (
+                    <FormField
+                      control={form.control}
+                      name="businessLocationOwnershipOther"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Specify Other Ownership</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Form>
     </ContentLayout>
   );
 }

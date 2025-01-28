@@ -12,8 +12,10 @@ import { Plus, Eye, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useMediaQuery } from "react-responsive";
 import { User } from "lucia";
+import { useUserStore } from "@/store/user";
 
-export default function ListBusinesses({ user }: { user: User }) {
+export default function ListBusinesses({ user: propsUser }: { user: User }) {
+  const user = useUserStore((state) => state.user);
   const [search, setSearch] = useState("");
   const [wardNo, setWardNo] = useState<number | undefined>();
   const debouncedSearch = useDebounce(search, 500);
@@ -73,7 +75,7 @@ export default function ListBusinesses({ user }: { user: User }) {
       id: "actions",
       cell: ({ row }: { row: any }) => (
         <div className="flex gap-2">
-          <Link href={`/business/${row.original.id}`}>
+          <Link href={`/businesses/${row.original.id}`}>
             <Button size="sm" variant="outline">
               <Eye className="mr-2 h-4 w-4" /> View
             </Button>
@@ -87,12 +89,14 @@ export default function ListBusinesses({ user }: { user: User }) {
     <ContentLayout
       title="Businesses"
       actions={
-        <Link href="/business/create">
-          <Button className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg transition-all hover:shadow-xl">
-            <Plus className="mr-2 h-4 w-4" />
-            Create New Business
-          </Button>
-        </Link>
+        user?.role !== "viewer" ? (
+          <Link href="/businesses/create">
+            <Button className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-white shadow-lg transition-all hover:shadow-xl">
+              <Plus className="mr-2 h-4 w-4" />
+              Create New Business
+            </Button>
+          </Link>
+        ) : null
       }
     >
       <div className="mx-auto max-w-7xl space-y-6 p-4"></div>
