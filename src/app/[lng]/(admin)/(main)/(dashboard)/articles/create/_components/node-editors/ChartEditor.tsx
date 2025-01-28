@@ -42,7 +42,6 @@ const chartTypes: { value: ChartType; label: string }[] = [
 export const ChartEditor = ({ node }: { node: ChartNode }) => {
   const { updateNode } = useNode(node.id);
   const [activeTab, setActiveTab] = useState("data");
-  const [previewData, setPreviewData] = useState<any>(null);
 
   const handleDataUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,25 +50,24 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
       try {
         const rows = text.split("\n").map((row) => row.split(","));
         const headers = rows[0];
-        const data = rows.slice(1).map((row) => {
-          const point: ChartDataPoint = {
-            x: row[0],
-            y: parseFloat(row[1]),
-          };
-          if (row[2]) point.category = row[2];
-          return point;
-        });
+
+        // Create a new series with the CSV data
+        const newSeries: ChartSeries = {
+          name: {
+            fallbackContent: headers[0],
+            content: {},
+          },
+          data: rows.slice(1).map((row) => ({
+            label: row[0],
+            value: parseFloat(row[1]),
+            category: row[2] || row[0], // Use label as category if not provided
+          })),
+        };
 
         updateNode({
           data: {
             ...node.data,
-            source: {
-              type: "static",
-              data: data,
-            },
-            xField: headers[0],
-            yField: headers[1],
-            categoryField: headers[2],
+            series: [newSeries],
           },
         } as Partial<ChartNode>);
       } catch (error) {
@@ -79,18 +77,44 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
   };
 
   const getEChartsOption = useCallback(() => {
-    const series = node.data.series.map((s) => ({
-      name: s.name.fallbackContent,
-      type: s.type || node.chartType,
-      data: s.data,
-      smooth: s.smooth,
-      symbolSize: s.symbolSize,
-      areaStyle: s.areaStyle,
-      lineStyle: s.lineStyle,
-      emphasis: s.emphasis,
-      markPoint: s.markPoint,
-      markLine: s.markLine,
-    }));
+    const series = node.data.series.map((s) => {
+      // Transform data for the chart
+      const chartData = s.data.map((point) => {
+        if (["pie", "donut"].includes(node.chartType)) {
+          return {
+            name: point.label,
+            value: point.value,
+          };
+        }
+        return {
+          name: point.label,
+          value: point.value,
+          category: point.category,
+        };
+      });
+
+      return {
+        name: s.name.fallbackContent,
+        type: s.type || node.chartType,
+        data: chartData,
+        smooth: s.smooth,
+        symbolSize: s.symbolSize,
+        areaStyle: s.areaStyle,
+        lineStyle: s.lineStyle,
+        emphasis: s.emphasis,
+        markPoint: s.markPoint,
+        markLine: s.markLine,
+      };
+    });
+
+    // Get unique categories for x-axis
+    const categories = Array.from(
+      new Set(
+        node.data.series
+          .flatMap((s) => s.data)
+          .map((point) => point.category || point.label),
+      ),
+    );
 
     return {
       title: {
@@ -100,23 +124,31 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
       tooltip: {
         show: node.options?.tooltip?.show ?? true,
         trigger: node.options?.tooltip?.trigger || "axis",
-        backgroundColor: node.options?.tooltip?.backgroundColor,
-        borderColor: node.options?.tooltip?.borderColor,
-        textStyle: node.options?.tooltip?.textStyle,
+        formatter: (params: any) => {
+          if (Array.isArray(params)) {
+            return `${params[0].name}<br/>${params
+              .map((p) => `${p.seriesName}: ${p.value}`)
+              .join("<br/>")}`;
+          }
+          return `${params.name}: ${params.value}`;
+        },
       },
-      toolbox: node.options?.toolbox,
-      grid: node.options?.grid,
-      xAxis: node.options?.xAxis,
-      yAxis: node.options?.yAxis,
-      series,
-      animation: node.options?.animation,
-      dataZoom: node.options?.dataZoom
-        ? [
-            { type: "slider", show: true, xAxisIndex: [0], start: 0, end: 100 },
-            { type: "inside", xAxisIndex: [0], start: 0, end: 100 },
-          ]
+      xAxis: !["pie", "donut"].includes(node.chartType)
+        ? {
+            type: "category",
+            data: categories,
+            boundaryGap: ["bar", "column", "stacked-column"].includes(
+              node.chartType,
+            ),
+          }
         : undefined,
-      legend: node.options?.legend,
+      yAxis: !["pie", "donut"].includes(node.chartType)
+        ? {
+            type: "value",
+          }
+        : undefined,
+      series,
+      // ...existing options for animation, dataZoom, legend, etc...
     };
   }, [node]);
 
@@ -176,7 +208,23 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
                     className="hidden"
                     onChange={handleDataUpload}
                   />
-                  <Button variant="outline">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      // Generate sample CSV based on chart type
+                      const header = "Label,Value,Category\n";
+                      const sampleData =
+                        "Sample A,100,Category 1\nSample B,200,Category 2";
+                      const blob = new Blob([header + sampleData], {
+                        type: "text/csv",
+                      });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "chart-template.csv";
+                      a.click();
+                    }}
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Download Template
                   </Button>

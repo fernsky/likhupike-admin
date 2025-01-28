@@ -53,10 +53,18 @@ export const ChartPreview = ({ node, language }: ChartPreviewProps) => {
   const getEChartOptions = useMemo(() => {
     try {
       const series = node.data?.series.map((s) => {
+        // Transform data points based on chart type
+        const transformedData = s.data.map((point) => {
+          if (["pie", "donut"].includes(node.chartType)) {
+            return { value: point.value, name: point.label };
+          }
+          return [point.label, point.value];
+        });
+
         const baseSeriesConfig = {
           name: s.name.content[language] || s.name.fallbackContent,
           type: s.type || node.chartType,
-          data: s.data,
+          data: transformedData,
           smooth: s.smooth,
           symbolSize: s.symbolSize,
           emphasis: s.emphasis,
@@ -158,7 +166,7 @@ export const ChartPreview = ({ node, language }: ChartPreviewProps) => {
           node.chartType !== "pie" && node.chartType !== "donut"
             ? {
                 ...node.options?.xAxis,
-                type: node.options?.xAxis?.type || "category",
+                type: "category",
                 boundaryGap: ["bar", "column", "stacked-column"].includes(
                   node.chartType,
                 ),

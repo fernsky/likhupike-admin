@@ -338,17 +338,10 @@ export interface ChartAxis {
 }
 
 export interface ChartDataPoint {
-  x: number | string;
-  y: number;
-  category?: string;
-  label?: string;
+  label: string;
+  value: number;
+  color?: string;
   tooltip?: string;
-  itemStyle?: {
-    color?: string;
-    opacity?: number;
-    borderWidth?: number;
-    borderColor?: string;
-  };
 }
 
 export interface ChartSeries {
