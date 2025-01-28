@@ -31,11 +31,18 @@ export const SeriesEditor = ({ node, updateNode }: SeriesEditorProps) => {
 
   const addDataPoint = (seriesIndex: number) => {
     const series = [...node.data.series];
-    series[seriesIndex].data.push({
-      label: "",
-      value: 0,
-      category: "",
-    });
+    // Create a new array for the data property
+    series[seriesIndex] = {
+      ...series[seriesIndex],
+      data: [
+        ...series[seriesIndex].data,
+        {
+          label: "",
+          value: 0,
+          category: "",
+        },
+      ],
+    };
     updateNode({
       data: { ...node.data, series },
     });
@@ -47,9 +54,11 @@ export const SeriesEditor = ({ node, updateNode }: SeriesEditorProps) => {
     updates: Partial<ChartDataPoint>,
   ) => {
     const series = [...node.data.series];
-    series[seriesIndex].data[pointIndex] = {
-      ...series[seriesIndex].data[pointIndex],
-      ...updates,
+    series[seriesIndex] = {
+      ...series[seriesIndex],
+      data: series[seriesIndex].data.map((point, idx) =>
+        idx === pointIndex ? { ...point, ...updates } : point,
+      ),
     };
     updateNode({
       data: { ...node.data, series },
@@ -64,11 +73,22 @@ export const SeriesEditor = ({ node, updateNode }: SeriesEditorProps) => {
             <Input
               value={series.name.fallbackContent}
               onChange={(e) => {
-                const updatedSeries = [...node.data.series];
-                updatedSeries[seriesIndex].name.fallbackContent =
-                  e.target.value;
+                const newSeries = node.data.series.map((s, idx) =>
+                  idx === seriesIndex
+                    ? {
+                        ...s,
+                        name: {
+                          ...s.name,
+                          fallbackContent: e.target.value,
+                        },
+                      }
+                    : s,
+                );
                 updateNode({
-                  data: { ...node.data, series: updatedSeries },
+                  data: {
+                    ...node.data,
+                    series: newSeries,
+                  },
                 });
               }}
               placeholder="Series name"
