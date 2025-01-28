@@ -7,6 +7,9 @@ import { QuoteEditor } from "./QuoteEditor";
 import { ChartEditor } from "./ChartEditor";
 import { CalloutEditor } from "./CalloutEditor";
 import { ButtonEditor } from "./ButtonEditor";
+import { SectionEditor } from "./SectionEditor";
+import { TableOfContentsEditor } from "./TableOfContentsEditor";
+import { VideoEditor } from "./VideoEditor";
 
 export const NodeEditors: Record<string, React.ComponentType<any>> = {
   heading: HeadingEditor,
@@ -18,4 +21,7 @@ export const NodeEditors: Record<string, React.ComponentType<any>> = {
   chart: ChartEditor,
   callout: CalloutEditor,
   button: ButtonEditor,
+  section: SectionEditor,
+  toc: TableOfContentsEditor,
+  video: VideoEditor,
 };

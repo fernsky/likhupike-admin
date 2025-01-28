@@ -23,14 +23,24 @@ export type DataType =
   | "currency"
   | "percentage";
 export type ChartType =
+  | "line"
+  | "bar"
+  | "scatter"
   | "pie"
   | "donut"
-  | "line"
   | "area"
-  | "bar"
   | "column"
   | "stacked-column"
-  | "scatter";
+  | "radar"
+  | "funnel"
+  | "gauge"
+  | "boxplot"
+  | "candlestick"
+  | "heatmap"
+  | "tree"
+  | "treemap"
+  | "sunburst"
+  | "sankey";
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 // Rich Text Formatting
@@ -285,14 +295,14 @@ export interface TableNode extends BaseNode {
 
 // Chart Types with Enhanced Features
 export interface ChartStyle {
-  showPoints: boolean;
-  innerRadius: number;
-  outerRadius: string;
-  showLabels: boolean;
-  container: CSSProperties | undefined;
-  height: number;
+  showPoints?: boolean;
+  innerRadius?: number;
+  outerRadius?: string;
+  showLabels?: boolean;
+  container?: CSSProperties;
+  height?: number;
   theme?: "light" | "dark" | "custom";
-  colors: string[];
+  colors?: string[];
   fontFamily?: string;
   fontSize?: number;
   background?: string;
@@ -327,61 +337,154 @@ export interface ChartAxis {
   };
 }
 
+export interface ChartDataPoint {
+  x: number | string;
+  y: number;
+  category?: string;
+  label?: string;
+  tooltip?: string;
+  itemStyle?: {
+    color?: string;
+    opacity?: number;
+    borderWidth?: number;
+    borderColor?: string;
+  };
+}
+
 export interface ChartSeries {
   name: MultilingualContent;
-  data: Array<number | { x: number | string; y: number; label?: string }>;
   type?: ChartType;
+  data: ChartDataPoint[];
   stack?: string;
-  color?: string;
-  visible?: boolean;
-  showLabels?: boolean;
-  labelPosition?: "inside" | "outside" | "center";
-  style?: {
-    lineStyle?: "solid" | "dashed" | "dotted";
-    lineWidth?: number;
-    markerSize?: number;
+  smooth?: boolean;
+  symbol?: string;
+  symbolSize?: number;
+  areaStyle?: {
     opacity?: number;
-    gradient?: {
-      enabled: boolean;
-      colors: string[];
-    };
+    color?: string | string[];
+  };
+  lineStyle?: {
+    width?: number;
+    type?: "solid" | "dashed" | "dotted";
+    color?: string;
+  };
+  emphasis?: {
+    focus?: "self" | "series";
+    scale?: number;
+  };
+  markPoint?: {
+    data: Array<{
+      type: "min" | "max" | "average";
+      name: string;
+    }>;
+  };
+  markLine?: {
+    data: Array<{
+      type: "min" | "max" | "average" | "median";
+      name: string;
+    }>;
+  };
+  markArea?: {
+    data: Array<
+      Array<{
+        xAxis?: number | string;
+        yAxis?: number | string;
+        name?: string;
+      }>
+    >;
   };
 }
 
 export interface ChartNode extends BaseNode {
   type: "chart";
-  title?: MultilingualContent;
-  description?: MultilingualContent;
   chartType: ChartType;
+  title?: MultilingualContent;
+  subtitle?: MultilingualContent;
+  style?: ChartStyle; // Make style optional but properly typed
   data: {
-    labels?: MultilingualContent[];
+    source: {
+      type: "static" | "api" | "csv";
+      url?: string;
+      refreshInterval?: number;
+      data?: any[];
+    };
     series: ChartSeries[];
+    xField?: string;
+    yField?: string;
+    categoryField?: string;
   };
-  style: ChartStyle;
-  axes?: {
-    x?: ChartAxis;
-    y?: ChartAxis;
-    secondary?: ChartAxis;
+  options: {
+    theme?: "light" | "dark" | "custom";
+    interaction?: {
+      zoom?: boolean;
+      drag?: boolean;
+      brush?: boolean;
+    };
+    animation?: {
+      enabled: boolean;
+      duration?: number;
+      easing?: string;
+    };
+    dataZoom?: {
+      show?: boolean;
+      type?: "slider" | "inside" | "both";
+      rangeMode?: ["value" | "percent", "value" | "percent"];
+    };
+    tooltip?: {
+      show?: boolean;
+      trigger?: "item" | "axis" | "none";
+      formatter?: string;
+      backgroundColor?: string;
+      borderColor?: string;
+      textStyle?: Record<string, any>;
+    };
+    toolbox?: {
+      show?: boolean;
+      features?: {
+        saveAsImage?: boolean;
+        restore?: boolean;
+        dataView?: boolean;
+        dataZoom?: boolean;
+        magicType?: boolean;
+      };
+    };
+    grid?: {
+      show?: boolean;
+      top?: string | number;
+      right?: string | number;
+      bottom?: string | number;
+      left?: string | number;
+      containLabel?: boolean;
+    };
+    xAxis?: {
+      type?: "value" | "category" | "time";
+      name?: string;
+      nameLocation?: "start" | "middle" | "end";
+      min?: number | "dataMin";
+      max?: number | "dataMax";
+      axisLabel?: {
+        rotate?: number;
+        formatter?: string;
+      };
+    };
+    yAxis?: {
+      type?: "value" | "category" | "time";
+      name?: string;
+      nameLocation?: "start" | "middle" | "end";
+      min?: number | "dataMin";
+      max?: number | "dataMax";
+      axisLabel?: {
+        formatter?: string;
+      };
+    };
+    color?: string[];
+    legend?: {
+      show?: boolean;
+      type?: "plain" | "scroll";
+      orient?: "horizontal" | "vertical";
+      position?: "top" | "bottom" | "left" | "right";
+    };
   };
-  legend?: {
-    show: boolean;
-    position: "top" | "right" | "bottom" | "left";
-    layout: "horizontal" | "vertical";
-    interactive?: boolean;
-    title?: MultilingualContent;
-  };
-  tooltip?: {
-    enabled: boolean;
-    shared?: boolean;
-    format?: string;
-    custom?: string; // JavaScript function as string
-  };
-  annotations?: Array<{
-    type: "line" | "box" | "text";
-    content?: MultilingualContent;
-    position: { x: number | string; y: number };
-    style?: Record<string, any>;
-  }>;
 }
 
 // Container/Layout Nodes

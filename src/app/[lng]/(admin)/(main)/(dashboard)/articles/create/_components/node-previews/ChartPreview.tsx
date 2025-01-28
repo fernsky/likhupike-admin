@@ -1,23 +1,44 @@
 import { ChartNode } from "../../_store/types";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
 import { cn } from "@/lib/utils";
 import { useMemo } from "react";
+import ReactECharts from "echarts-for-react";
+import { registerTheme } from "echarts";
+
+// Register custom themes
+registerTheme("custom-dark", {
+  backgroundColor: "#1f1f1f",
+  textStyle: {},
+  title: {
+    textStyle: {
+      color: "#ffffff",
+    },
+    subtextStyle: {
+      color: "#dddddd",
+    },
+  },
+  line: {
+    itemStyle: {
+      borderWidth: 1,
+    },
+    lineStyle: {
+      width: 2,
+    },
+    symbolSize: 4,
+    symbol: "circle",
+    smooth: false,
+  },
+  radar: {
+    itemStyle: {
+      borderWidth: 1,
+    },
+    lineStyle: {
+      width: 2,
+    },
+    symbolSize: 4,
+    symbol: "circle",
+    smooth: false,
+  },
+});
 
 interface ChartPreviewProps {
   node: ChartNode;
@@ -26,197 +47,213 @@ interface ChartPreviewProps {
 
 export const ChartPreview = ({ node, language }: ChartPreviewProps) => {
   const title = node.title?.content[language] || node.title?.fallbackContent;
-  const colors = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00C49F"];
+  const subtitle =
+    node.subtitle?.content[language] || node.subtitle?.fallbackContent;
 
-  const chartData = useMemo(() => {
+  const getEChartOptions = useMemo(() => {
     try {
-      // Ensure we have valid data
-      if (!node.data?.series?.[0]?.data) return [];
+      const series = node.data?.series.map((s) => {
+        const baseSeriesConfig = {
+          name: s.name.content[language] || s.name.fallbackContent,
+          type: s.type || node.chartType,
+          data: s.data,
+          smooth: s.smooth,
+          symbolSize: s.symbolSize,
+          emphasis: s.emphasis,
+          markPoint: s.markPoint,
+          markLine: s.markLine,
+          markArea: s.markArea,
+        };
 
-      // For pie charts, use first series only
-      if (node.chartType === "pie") {
-        return node.data.series[0].data.map((point) => ({
-          name: typeof point === "object" ? point.x : point,
-          value: typeof point === "object" ? point.y : point,
-        }));
-      }
+        // Add chart-specific configurations
+        switch (node.chartType) {
+          case "pie":
+          case "donut":
+            return {
+              ...baseSeriesConfig,
+              radius: [
+                node.style?.innerRadius ? `${node.style.innerRadius}%` : "0%",
+                node.style?.outerRadius || "75%",
+              ],
+              label: {
+                show: node.style?.showLabels,
+                formatter: "{b}: {d}%",
+              },
+            };
 
-      // For other charts, merge all series data by x value
-      const xValues = new Set(
-        node.data.series.flatMap((s) =>
-          s.data.map((d) => (typeof d === "object" ? d.x : d)),
-        ),
-      );
+          case "line":
+          case "area":
+            return {
+              ...baseSeriesConfig,
+              showSymbol: node.style?.showPoints,
+              areaStyle:
+                node.chartType === "area"
+                  ? {
+                      ...s.areaStyle,
+                      opacity: s.areaStyle?.opacity || 0.3,
+                    }
+                  : undefined,
+              lineStyle: s.lineStyle,
+            };
 
-      return Array.from(xValues).map((x) => ({
-        x,
-        ...Object.fromEntries(
-          node.data.series.map((s) => [
-            s.name,
-            (
-              s.data.find((d) => typeof d === "object" && d.x === x) as
-                | { y: number }
-                | undefined
-            )?.y ?? 0,
-          ]),
-        ),
-      }));
+          case "bar":
+          case "column":
+            return {
+              ...baseSeriesConfig,
+              barGap: "30%",
+              emphasis: {
+                focus: "series",
+              },
+            };
+
+          case "stacked-column":
+            return {
+              ...baseSeriesConfig,
+              type: "bar",
+              stack: "total",
+              label: {
+                show: true,
+                position: "inside",
+              },
+            };
+
+          default:
+            return baseSeriesConfig;
+        }
+      });
+
+      // Only add dataZoom for cartesian charts (not pie/donut)
+      const shouldShowDataZoom =
+        node.options?.dataZoom?.show &&
+        !["pie", "donut"].includes(node.chartType);
+
+      return {
+        title: {
+          text: title,
+          subtext: subtitle,
+          left: "center",
+          top: 10,
+          textStyle: {
+            fontSize: node.style?.fontSize,
+          },
+        },
+        tooltip: {
+          ...node.options?.tooltip,
+          trigger: node.options?.tooltip?.trigger || "axis",
+          backgroundColor: node.options?.tooltip?.backgroundColor,
+          borderColor: node.options?.tooltip?.borderColor,
+          textStyle: node.options?.tooltip?.textStyle,
+        },
+        toolbox: node.options?.toolbox?.show
+          ? {
+              show: true,
+              feature: node.options?.toolbox?.features,
+            }
+          : undefined,
+        grid: {
+          ...node.options?.grid,
+          containLabel: true,
+        },
+        xAxis:
+          node.chartType !== "pie" && node.chartType !== "donut"
+            ? {
+                ...node.options?.xAxis,
+                type: node.options?.xAxis?.type || "category",
+                boundaryGap: ["bar", "column", "stacked-column"].includes(
+                  node.chartType,
+                ),
+              }
+            : undefined,
+        yAxis:
+          node.chartType !== "pie" && node.chartType !== "donut"
+            ? {
+                ...node.options?.yAxis,
+                type: node.options?.yAxis?.type || "value",
+              }
+            : undefined,
+        series,
+        animation: node.options?.animation?.enabled
+          ? {
+              duration: node.options?.animation?.duration,
+              easing: node.options?.animation?.easing,
+            }
+          : false,
+        dataZoom: shouldShowDataZoom
+          ? [
+              {
+                type:
+                  node.options?.dataZoom?.type === "both"
+                    ? "slider"
+                    : node.options?.dataZoom?.type,
+                show: true,
+                // Only apply to x-axis for cartesian charts
+                xAxisIndex:
+                  node.chartType !== "pie" && node.chartType !== "donut"
+                    ? [0]
+                    : undefined,
+                start: 0,
+                end: 100,
+              },
+              node.options?.dataZoom?.type === "both"
+                ? {
+                    type: "inside",
+                    xAxisIndex:
+                      node.chartType !== "pie" && node.chartType !== "donut"
+                        ? [0]
+                        : undefined,
+                    start: 0,
+                    end: 100,
+                  }
+                : undefined,
+            ].filter(Boolean)
+          : undefined,
+        legend: node.options?.legend?.show
+          ? {
+              ...node.options?.legend,
+              type: node.options?.legend?.type || "plain",
+              orient: node.options?.legend?.orient || "horizontal",
+              [node.options?.legend?.position || "bottom"]: 10,
+            }
+          : undefined,
+        color: node.options?.color,
+      };
     } catch (error) {
-      console.error("Error processing chart data:", error);
-      return [];
+      console.error("Error generating chart options:", error);
+      return {};
     }
-  }, [node.data]);
+  }, [node, language, title, subtitle]);
 
-  const getChartComponent = () => {
-    if (chartData.length === 0) return null;
+  if (!node.data?.series?.[0]?.data?.length) {
+    return (
+      <div className="flex items-center justify-center h-[200px] text-gray-400 border rounded">
+        No data to display
+      </div>
+    );
+  }
 
-    try {
-      switch (node.chartType) {
-        case "line":
-          return (
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="x" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              {node.data.series.map((series, index) => (
-                <Line
-                  key={
-                    typeof series.name === "string"
-                      ? series.name
-                      : index.toString()
-                  }
-                  type="monotone"
-                  dataKey={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `series_${index}`
-                  }
-                  name={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `Series ${index + 1}`
-                  }
-                  stroke={colors[index % colors.length]}
-                  dot={node.style?.showPoints ?? true}
-                />
-              ))}
-            </LineChart>
-          );
-
-        case "bar":
-          return (
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="x" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              {node.data.series.map((series, index) => (
-                <Bar
-                  key={
-                    typeof series.name === "string"
-                      ? series.name
-                      : index.toString()
-                  }
-                  dataKey={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `series_${index}`
-                  }
-                  name={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `Series ${index + 1}`
-                  }
-                  fill={colors[index % colors.length]}
-                />
-              ))}
-            </BarChart>
-          );
-
-        case "pie":
-          return (
-            <PieChart>
-              <Pie
-                data={chartData}
-                nameKey="name"
-                dataKey="value"
-                innerRadius={node.style?.innerRadius ?? 0}
-                outerRadius={node.style?.outerRadius ?? "80%"}
-                label={node.style?.showLabels ?? true}
-              >
-                {chartData.map((_, index) => (
-                  <Cell key={index} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          );
-
-        case "area":
-          return (
-            <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="x" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              {node.data.series.map((series, index) => (
-                <Area
-                  key={
-                    typeof series.name === "string"
-                      ? series.name
-                      : index.toString()
-                  }
-                  type="monotone"
-                  dataKey={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `series_${index}`
-                  }
-                  name={
-                    typeof series.name === "string"
-                      ? series.name
-                      : `Series ${index + 1}`
-                  }
-                  fill={colors[index % colors.length]}
-                  fillOpacity={0.3}
-                  stroke={colors[index % colors.length]}
-                />
-              ))}
-            </AreaChart>
-          );
-
-        default:
-          return null;
-      }
-    } catch (error) {
-      console.error("Error rendering chart:", error);
-      return null;
-    }
-  };
+  const theme = node.options?.theme || "light";
+  const background =
+    node.style?.background || (theme === "dark" ? "#1f1f1f" : undefined);
 
   return (
     <div
-      className={cn("my-8", node.className)}
+      className={cn("my-8 rounded-lg overflow-hidden", node.className)}
       style={{
         ...node.style?.container,
-        minHeight: "200px",
+        background,
+        padding: node.style?.padding,
+        borderRadius: node.style?.borderRadius,
       }}
     >
-      {title && <h4 className="mb-4 font-semibold">{title}</h4>}
-      <div className="w-full" style={{ height: node.style?.height ?? 400 }}>
-        <ResponsiveContainer>
-          {getChartComponent() || (
-            <div className="flex items-center justify-center h-full text-gray-400">
-              No data to display
-            </div>
-          )}
-        </ResponsiveContainer>
-      </div>
+      <ReactECharts
+        option={getEChartOptions}
+        style={{
+          height: node.style?.height || 400,
+          width: "100%",
+        }}
+        theme={theme === "custom" ? "custom-dark" : theme}
+        opts={{ renderer: "canvas" }}
+      />
     </div>
   );
 };

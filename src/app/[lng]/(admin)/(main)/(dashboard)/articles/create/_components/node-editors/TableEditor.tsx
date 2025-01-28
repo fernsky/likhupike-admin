@@ -1,23 +1,11 @@
 import { useNode } from "../../_store/hooks";
-import {
-  TableNode,
-  TableColumn,
-  TableRow,
-  TableCell,
-} from "../../_store/types";
+import { TableNode, TableColumn, TableRow } from "../../_store/types";
 import { nanoid } from "nanoid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash, ArrowUp, ArrowDown, Settings } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -26,7 +14,7 @@ import {
   TableHeader,
   TableRow as UITableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import React from "react";
 
 interface TableEditorProps {
   node: TableNode;
@@ -34,6 +22,30 @@ interface TableEditorProps {
 
 export const TableEditor = ({ node }: TableEditorProps) => {
   const { updateNode } = useNode(node.id);
+
+  // Initialize table if needed
+  const initializeTableIfNeeded = () => {
+    if (!node.columns || !node.rows || !node.rowOrder || !node.columnOrder) {
+      updateNode({
+        columns: [],
+        rows: [],
+        rowOrder: [],
+        columnOrder: {},
+        layout: {
+          ...node.layout,
+          totalColumnSpan: 0,
+          responsive: true,
+          stripe: false,
+          border: "all",
+        },
+      } as Partial<TableNode>);
+    }
+  };
+
+  // Call initialize on mount
+  React.useEffect(() => {
+    initializeTableIfNeeded();
+  }, []);
 
   const addColumn = () => {
     const columnId = nanoid(15);
@@ -48,11 +60,31 @@ export const TableEditor = ({ node }: TableEditorProps) => {
       },
     };
 
+    // Add empty cells for this column to all existing rows
+    const updatedRows = (node.rows || []).map((row) => ({
+      ...row,
+      cells: [
+        ...row.cells,
+        {
+          columnId,
+          content: {
+            fallbackContent: "",
+            content: { en: "", ne: "" },
+          },
+        },
+      ],
+    }));
+
     updateNode({
-      columns: [...node.columns, newColumn],
+      columns: [...(node.columns || []), newColumn],
+      rows: updatedRows,
       columnOrder: {
-        ...node.columnOrder,
-        1: [...(node.columnOrder[1] || []), columnId],
+        ...(node.columnOrder || {}),
+        1: [...((node.columnOrder || {})[1] || []), columnId],
+      },
+      layout: {
+        ...(node.layout || {}),
+        totalColumnSpan: (node.layout?.totalColumnSpan || 0) + 1,
       },
     } as Partial<TableNode>);
   };
@@ -61,7 +93,7 @@ export const TableEditor = ({ node }: TableEditorProps) => {
     const rowId = nanoid(15);
     const newRow: TableRow = {
       id: rowId,
-      cells: node.columns.map((col) => ({
+      cells: (node.columns || []).map((col) => ({
         columnId: col.id,
         content: {
           fallbackContent: "",
@@ -71,8 +103,8 @@ export const TableEditor = ({ node }: TableEditorProps) => {
     };
 
     updateNode({
-      rows: [...node.rows, newRow],
-      rowOrder: [...node.rowOrder, rowId],
+      rows: [...(node.rows || []), newRow],
+      rowOrder: [...(node.rowOrder || []), rowId],
     } as Partial<TableNode>);
   };
 
@@ -82,7 +114,7 @@ export const TableEditor = ({ node }: TableEditorProps) => {
     value: string,
   ) => {
     updateNode({
-      columns: node.columns.map((col) =>
+      columns: (node.columns || []).map((col) =>
         col.id === columnId
           ? {
               ...col,
@@ -103,7 +135,7 @@ export const TableEditor = ({ node }: TableEditorProps) => {
     value: string,
   ) => {
     updateNode({
-      rows: node.rows.map((row) =>
+      rows: (node.rows || []).map((row) =>
         row.id === rowId
           ? {
               ...row,
@@ -133,10 +165,10 @@ export const TableEditor = ({ node }: TableEditorProps) => {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Switch
-                checked={node.layout.responsive || false}
+                checked={node.layout?.responsive || false}
                 onCheckedChange={(checked) =>
                   updateNode({
-                    layout: { ...node.layout, responsive: checked },
+                    layout: { ...(node.layout || {}), responsive: checked },
                   } as Partial<TableNode>)
                 }
               />
@@ -144,10 +176,10 @@ export const TableEditor = ({ node }: TableEditorProps) => {
             </div>
             <div className="flex items-center gap-2">
               <Switch
-                checked={node.layout.stripe || false}
+                checked={node.layout?.stripe || false}
                 onCheckedChange={(checked) =>
                   updateNode({
-                    layout: { ...node.layout, stripe: checked },
+                    layout: { ...(node.layout || {}), stripe: checked },
                   } as Partial<TableNode>)
                 }
               />
@@ -181,7 +213,7 @@ export const TableEditor = ({ node }: TableEditorProps) => {
               <Table>
                 <TableHeader>
                   <UITableRow>
-                    {node.columns.map((column, index) => (
+                    {(node.columns || []).map((column, index) => (
                       <TableHead key={column.id}>
                         <Input
                           value={column.title.content[lang as "en" | "ne"]}
@@ -200,7 +232,7 @@ export const TableEditor = ({ node }: TableEditorProps) => {
                   </UITableRow>
                 </TableHeader>
                 <TableBody>
-                  {node.rows.map((row) => (
+                  {(node.rows || []).map((row) => (
                     <UITableRow key={row.id}>
                       {row.cells.map((cell) => (
                         <UITableCell key={cell.columnId}>
