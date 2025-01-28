@@ -1,35 +1,78 @@
-import { useEffect } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { ArticleSchema as Article } from "../_store/types";
+import { EditorNodeRenderer } from "./EditorNodeRenderer";
 import { useArticleStore } from "../_store/store";
-import { NodeList } from "./NodeList";
-import { Toolbar } from "./Toolbar";
-import { Preview } from "./Preview";
-import { MetadataEditor } from "./MetadataEditor";
+import { Key } from "react";
 
-export const ArticleEditor = () => {
-  const initializeArticle = useArticleStore((state) => state.initializeArticle);
-  const previewMode = useArticleStore((state) => state.previewMode);
-  const article = useArticleStore((state) => state.article);
+interface ArticleEditorProps {
+  article: Article;
+  activeNodeId: string | null;
+}
 
-  useEffect(() => {
-    initializeArticle();
-  }, [initializeArticle]);
+export const ArticleEditor = ({
+  article,
+  activeNodeId,
+}: ArticleEditorProps) => {
+  const reorderNodes = useArticleStore((state) => state.reorderNodes);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      const oldIndex = article.structure.order.indexOf(active.id);
+      const newIndex = article.structure.order.indexOf(over.id);
+      const newOrder = [...article.structure.order];
+      newOrder.splice(oldIndex, 1);
+      newOrder.splice(newIndex, 0, active.id);
+      reorderNodes(newOrder);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Toolbar />
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext
+        items={article.structure.order}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="space-y-4">
+          {article.structure.order.map((nodeId: Key | null | undefined) => {
+            const node = article.structure.nodes.find(
+              (n: { id: Key | null | undefined }) => n.id === nodeId,
+            );
+            if (!node) return null;
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          {!previewMode ? (
-            <div className="space-y-8">
-              <MetadataEditor />
-              <NodeList />
-            </div>
-          ) : (
-            <Preview article={article} />
-          )}
+            return (
+              <EditorNodeRenderer
+                key={nodeId}
+                node={node}
+                isActive={activeNodeId === nodeId}
+              />
+            );
+          })}
         </div>
-      </div>
-    </div>
+      </SortableContext>
+    </DndContext>
   );
 };

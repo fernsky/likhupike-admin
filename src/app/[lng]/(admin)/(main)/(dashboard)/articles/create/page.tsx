@@ -1,14 +1,13 @@
 "use client";
 
 import { useArticleStore } from "./_store/store";
-import { NodeEditors } from "./_components/node-editors";
-import { NodePreviewRenderers } from "./_components/node-previews";
 import { NodeSelector } from "./_components/NodeSelector";
 import { Button } from "@/components/ui/button";
 import { Plus, Eye, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ArticleSettings } from "./_components/ArticleSettings";
-import { cn } from "@/lib/utils";
+import { ArticleEditor } from "./_components/ArticleEditor";
+import { ArticlePreview } from "./_components/ArticlePreview";
 
 export default function CreateArticlePage() {
   const {
@@ -51,40 +50,11 @@ export default function CreateArticlePage() {
             </div>
 
             {/* Article Structure */}
-            <div className="space-y-8">
-              {article.structure.order.map((nodeId) => {
-                const node = article.structure.nodes.find(
-                  (n) => n.id === nodeId,
-                );
-                if (!node) return null;
-
-                const PreviewComponent = NodePreviewRenderers[node.type];
-                const EditorComponent = NodeEditors[node.type];
-
-                if (!PreviewComponent || !EditorComponent) return null;
-
-                return (
-                  <div
-                    key={nodeId}
-                    className={cn(
-                      "",
-                      activeNodeId === nodeId &&
-                        !previewMode &&
-                        "ring-2 ring-primary",
-                    )}
-                  >
-                    {previewMode ? (
-                      <PreviewComponent
-                        node={node}
-                        language={article.settings.defaultLanguage}
-                      />
-                    ) : (
-                      <EditorComponent node={node} />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            {previewMode ? (
+              <ArticlePreview article={article} />
+            ) : (
+              <ArticleEditor article={article} activeNodeId={activeNodeId} />
+            )}
           </div>
         </main>
       </div>
