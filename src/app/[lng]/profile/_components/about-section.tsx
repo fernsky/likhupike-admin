@@ -75,7 +75,7 @@ const AboutSection = () => {
               About Us
             </Badge>
             <h2 className="text-4xl font-bold tracking-tight text-white/95 mb-4 drop-shadow-sm">
-              About Likhu Pike
+              About Likhupike
             </h2>
             <p className="text-lg text-white/85 leading-relaxed max-w-2xl mx-auto">
               Discover the beauty and potential of our thriving rural

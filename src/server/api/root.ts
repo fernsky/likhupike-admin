@@ -5,6 +5,7 @@ import { userManagementRouter } from "./routers/users/user.procedure";
 import { individualRouter } from "./routers/individual/individual.procedure";
 import { familyRouter } from "./routers/family/family.procedure";
 import { businessRouter } from "./routers/business/business.procedure";
+import { rbacMiddleware } from "./middleware/rbac-middleware";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
