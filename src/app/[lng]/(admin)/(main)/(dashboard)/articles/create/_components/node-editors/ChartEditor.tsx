@@ -205,19 +205,13 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
     >
       {/* Editor Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-cyan-50 rounded-lg">
-            <BarChart3 className="w-5 h-5 text-cyan-600" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Chart Editor
-            </h3>
-            <p className="text-sm text-gray-500">
-              Create dynamic data visualizations
-            </p>
-          </div>
-        </div>
+        <Badge
+          variant="outline"
+          className="bg-white/50 backdrop-blur-sm border-cyan-200"
+        >
+          <BarChart3 className="w-4 h-4 mr-1" />
+          Chart Editor
+        </Badge>
         <Badge
           variant="outline"
           className="bg-white/50 backdrop-blur-sm border-cyan-200"
@@ -282,14 +276,7 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
           >
             <TabsContent value="data" className="mt-0">
               <Card>
-                <CardHeader className="space-y-1">
-                  <CardTitle>Chart Data Configuration</CardTitle>
-                  <CardDescription>
-                    Configure your chart type and data series
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {/* Existing chart type selector with enhanced styling */}
+                <CardContent className="pt-6">
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <Select
@@ -354,7 +341,6 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
                       onChange={handleDataUpload}
                     />
 
-                    {/* Series Editor Component */}
                     <SeriesEditor node={node} updateNode={updateNode} />
                   </div>
                 </CardContent>
@@ -363,10 +349,7 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
 
             <TabsContent value="style">
               <Card>
-                <CardHeader>
-                  <CardTitle>Chart Style</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <StyleEditor node={node} updateNode={updateNode} />
                 </CardContent>
               </Card>
@@ -374,10 +357,7 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
 
             <TabsContent value="advanced">
               <Card>
-                <CardHeader>
-                  <CardTitle>Advanced Options</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <AdvancedEditor node={node} updateNode={updateNode} />
                 </CardContent>
               </Card>
@@ -385,10 +365,7 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
 
             <TabsContent value="preview">
               <Card>
-                <CardHeader>
-                  <CardTitle>Chart Preview</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="w-full h-[400px]">
                     <ReactECharts
                       option={getEChartsOption()}
@@ -402,12 +379,6 @@ export const ChartEditor = ({ node }: { node: ChartNode }) => {
           </motion.div>
         </AnimatePresence>
       </Tabs>
-
-      {/* Helper Text */}
-      <div className="text-sm text-gray-500 italic">
-        Pro tip: Use appropriate chart types to effectively communicate your
-        data
-      </div>
     </motion.div>
   );
 };

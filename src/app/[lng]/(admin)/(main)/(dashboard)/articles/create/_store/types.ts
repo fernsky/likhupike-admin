@@ -111,6 +111,7 @@ export interface Visibility {
 
 // Base Node
 export interface BaseNode {
+  content: any;
   id: string;
   type: string;
   metadata?: Metadata;
