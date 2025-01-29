@@ -74,6 +74,25 @@ export const SeriesEditor = ({ node, updateNode }: SeriesEditorProps) => {
     });
   };
 
+  const removeDataPoint = (seriesIndex: number, pointIndex: number) => {
+    const updatedSeries = node.data.series.map((series, idx) => {
+      if (idx === seriesIndex) {
+        return {
+          ...series,
+          data: series.data.filter((_, i) => i !== pointIndex),
+        };
+      }
+      return series;
+    });
+
+    updateNode({
+      data: {
+        ...node.data,
+        series: updatedSeries,
+      },
+    });
+  };
+
   return (
     <div className="space-y-4">
       <AnimatePresence>
@@ -203,16 +222,9 @@ export const SeriesEditor = ({ node, updateNode }: SeriesEditorProps) => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => {
-                                const updatedSeries = [...node.data.series];
-                                updatedSeries[seriesIndex].data.splice(
-                                  pointIndex,
-                                  1,
-                                );
-                                updateNode({
-                                  data: { ...node.data, series: updatedSeries },
-                                });
-                              }}
+                              onClick={() =>
+                                removeDataPoint(seriesIndex, pointIndex)
+                              }
                               className="opacity-0 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 transition-all duration-200"
                             >
                               <Trash className="w-4 h-4" />
