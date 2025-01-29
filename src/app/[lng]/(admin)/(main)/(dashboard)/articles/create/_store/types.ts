@@ -111,9 +111,9 @@ export interface Visibility {
 
 // Base Node
 export interface BaseNode {
-  content: any;
-  id: string;
+  id: string; // Make id optional since it's added by the store
   type: string;
+  content?: any; // Make content optional since not all nodes use it
   metadata?: Metadata;
   visibility?: Visibility;
   animation?: {
@@ -126,13 +126,17 @@ export interface BaseNode {
     margin?: string;
     padding?: string;
   };
+  data?: Record<string, any>;
 }
 
 // Content Nodes
 export interface HeadingNode extends BaseNode {
   type: "heading";
   level: HeadingLevel;
-  content: MultilingualContent;
+  content: {
+    fallbackContent: string;
+    content: Record<Language, string>;
+  };
   anchor?: string; // For navigation/linking
   style?: TextStyle;
 }

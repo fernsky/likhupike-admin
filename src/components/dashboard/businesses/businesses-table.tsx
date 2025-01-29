@@ -1,6 +1,5 @@
 import { DataTable } from "@/components/shared/data-table/data-table";
 import { Loader2 } from "lucide-react";
-import { BusinessCard } from "@/components/business/business-card";
 
 interface BusinessesTableProps {
   isLoading: boolean;
@@ -27,11 +26,5 @@ export function BusinessesTable({
     <div className="rounded-lg border">
       <DataTable columns={columns} data={data} isLoading={isLoading} />
     </div>
-  ) : (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {data.map((business) => (
-        <BusinessCard key={business.id} business={business} />
-      ))}
-    </div>
-  );
+  ) : null;
 }

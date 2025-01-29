@@ -17,7 +17,9 @@ import {
   MousePointer,
   LayoutGrid,
   FormInput,
+  LucideIcon,
 } from "lucide-react";
+import { BaseNode } from "../_store/types";
 
 interface NodeSelectorProps {
   open: boolean;
@@ -25,7 +27,14 @@ interface NodeSelectorProps {
   onSelect?: (node: { id: string; type: string }) => void;
 }
 
-const nodeTypes = [
+type NodeType = {
+  type: string;
+  label: string;
+  icon: LucideIcon;
+  defaultData: Partial<Omit<BaseNode, "id" | "type">> & Record<string, any>;
+};
+
+const nodeTypes: NodeType[] = [
   {
     type: "heading",
     label: "Heading",

@@ -43,6 +43,7 @@ import {
 import { type NodeReferenceUIProps, NodeReferenceUI } from "./NodeReferenceUI";
 import { cn } from "@/lib/utils";
 import { ContentBlockHeader } from "./ContentBlockHeader";
+import { NodeTypeColors } from "./node-colors";
 
 // Node type to icon mapping
 const nodeTypeIcons: Record<string, React.ReactNode> = {
@@ -61,7 +62,7 @@ interface ArticleEditorProps {
 
 interface SortableAccordionItemProps {
   nodeId: string;
-  node: BaseNode;
+  node: BaseNode & { type: keyof typeof NodeTypeColors };
   index: number;
   activeId: string | null;
   activeNodeId: string | null;

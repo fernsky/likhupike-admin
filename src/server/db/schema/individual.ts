@@ -73,3 +73,6 @@ const likhupikeIndividual = pgTable("likhupike_individual", {
 });
 
 export default likhupikeIndividual;
+
+export type Individual = typeof likhupikeIndividual.$inferSelect;
+export type IndividualUpdate = typeof likhupikeIndividual.$inferInsert;

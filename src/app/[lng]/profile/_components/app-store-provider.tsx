@@ -3,10 +3,8 @@
 import { type ReactNode, createContext, useRef, useContext } from "react";
 import { useStore } from "zustand";
 
-import {
-  type AppState,
-  createAppStore,
-} from "@/app/[lng]/profile/_store/app-store";
+import { type AppState } from "@/app/[lng]/profile/_store/types";
+import { createAppStore } from "@/app/[lng]/profile/_store/app-store";
 
 export type AppStoreApi = ReturnType<typeof createAppStore>;
 

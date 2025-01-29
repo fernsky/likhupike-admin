@@ -1,6 +1,6 @@
 import { Baby, Heart } from "lucide-react";
 import { DetailsCard } from "../details-card";
-import { Individual } from "@/server/api/routers/individuals/individuals.schema";
+import { Individual } from "@/server/db/schema/individual";
 
 export function FertilitySection({ individual }: { individual?: Individual }) {
   if (!individual?.gaveLiveBirth && !individual?.gaveRecentLiveBirth)

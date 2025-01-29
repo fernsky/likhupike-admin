@@ -46,7 +46,7 @@ export default function EditFamily({ params }: { params: { id: string } }) {
     },
   });
 
-  const onSubmit = async (values: FormData) => {
+  const onSubmit = async (values: any) => {
     try {
       await updateMutation.mutateAsync(values);
     } catch (error) {

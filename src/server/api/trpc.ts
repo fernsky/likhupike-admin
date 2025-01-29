@@ -125,9 +125,10 @@ export const createRoleProtectedProcedure = (roles: Role[]) => {
 
 export const adminProcedure = createRoleProtectedProcedure([
   "admin",
-  "superadmin",
+  "editor",
+  "viewer",
 ]);
-export const superAdminProcedure = createRoleProtectedProcedure(["superadmin"]);
+export const superAdminProcedure = createRoleProtectedProcedure(["admin"]);
 
 export type TRPCContext = inferAsyncReturnType<typeof createTRPCContext>;
 export type ProtectedTRPCContext = TRPCContext & {

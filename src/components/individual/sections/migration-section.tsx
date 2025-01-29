@@ -1,6 +1,6 @@
 import { GraduationCap, Home, Map, Plane } from "lucide-react";
 import { DetailsCard } from "../details-card";
-import { Individual } from "@/server/api/routers/individuals/individuals.schema";
+import { Individual } from "@/server/db/schema/individual";
 
 export function MigrationSection({ individual }: { individual?: Individual }) {
   if (!individual) return null;

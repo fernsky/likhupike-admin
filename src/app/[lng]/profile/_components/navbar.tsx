@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import ChangeLanguage from "./change-language";
 import { useTranslation } from "@/app/i18n/client";
-import Search from "./search";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -90,9 +89,6 @@ const Navbar: React.FC<NavbarProps> = ({ lng }) => {
 
             {/* Simplified Desktop Menu */}
             <div className="hidden md:flex items-center gap-8">
-              <div className="relative">
-                <Search />
-              </div>
               <div className="flex items-center gap-4">
                 {menuItems.map((item) => (
                   <Link
@@ -135,9 +131,6 @@ const Navbar: React.FC<NavbarProps> = ({ lng }) => {
               className="md:hidden border-t border-green-100 z-[500]"
             >
               <div className="bg-gradient-to-b from-white to-green-50/30 px-4 pt-2 pb-3 z-[500]">
-                <div className="p-2 mb-3">
-                  <Search />
-                </div>
                 {menuItems.map((item, index) => (
                   <motion.div
                     key={item.label}
